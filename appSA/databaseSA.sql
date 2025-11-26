@@ -31,7 +31,7 @@ create table registro_servico (
     pecas_subs  varchar(280),
     func_id    int,
     prazo       timestamp,
-    realizacao  datetime,
+    realizacao  timestamp,
     cliente     int,
     placa       varchar(7),
     foreign key (placa)    references carros(placa_carro),

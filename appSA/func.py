@@ -26,7 +26,7 @@ def index():
 #pagina inicial para a escolha das opções
 @app.route("/pagina_inicial")
 def pagina_inicial():
-    return render_template("listarclientes.html")  
+    return render_template("listarestoque.html")  
 
 
 
@@ -163,22 +163,22 @@ def listar_clientes():
         cursor = conn.cursor(dictionary=True)
         
         # 2. Query para selecionar todos os itens do estoque
-        query = "SELECT nome_cliente, cpf, celular, placa_carro FROM clientes"
+        query = "SELECT nome_cliente, cpf, validade, fornecedor, quant_peca FROM estoque"
         cursor.execute(query)
         
         # 3. Armazenar os resultados
-        clientes = cursor.fetchall()
+        pecas = cursor.fetchall()
         
     except mysql.connector.Error as err:
-        print(f"Erro ao listar clientes: {err}")
-        return render_template("paginainicial.html", erro="Erro ao carregar o clientes.")
+        print(f"Erro ao listar estoque: {err}")
+        return render_template("paginainicial.html", erro="Erro ao carregar o estoque.")
     finally:
         if conn and conn.is_connected():
             cursor.close()
             conn.close()
 
     # 4. Redirecionar para uma nova página de visualização do estoque (que precisa ser criada)
-    return render_template("listarclientes.html", clientes=clientes)
+    return render_template("listarestoque.html", pecas=pecas)
 
 
 #deletar clientes
