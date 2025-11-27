@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login do usuario</title>
     <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="shortcut icon" type="image/x-icon" href="\static\icone.png"> 
+            
 
 </head>
 
@@ -12,18 +15,16 @@
 
     <div class="base">
 
-        <h1 class="txt">LOGIN:</h1>
+        <h1 class="txt">LOGIN</h1>
 
         <form action="/login" method="POST">
 
-            <h2>Digite seu Usuário</h2>
-            <label for="login_user">Usuario:</label>
-            <input type="text" id="login_user" name="usuario" class="campo" required>
+            <h2 class="us">Digite seu Usuário</h2>
+            <input type="text" id="login_user" name="usuario" class="campo" required placeholder="Usuario">
 
 
-            <h2>Digite sua Senha</h2>
-            <label for="senha_user">Senha:</label>
-            <input type="text" id="senha_user" name="senha" class="campo" required><br><br>
+            <h2 class="se">Digite sua Senha</h2>
+            <input type="text" id="senha_user" name="senha" class="campo" required placeholder="Senha"><br><br>
 
             <button type="submit" class="botao" >Enviar</button>
                

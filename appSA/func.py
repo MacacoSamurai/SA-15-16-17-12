@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from main import app, CONFIG_DB
 from werkzeug.security import check_password_hash
 import mysql.connector
-
+pi = str ("pagi")
 
 DB_HOST = CONFIG_DB['host']
 DB_USER = CONFIG_DB['user']
@@ -20,13 +20,13 @@ def index():
     return redirect(url_for("login"))
 
 
-
+ 
 
 
 #pagina inicial para a escolha das opções
-@app.route("/pagina_inicial")
+@app.route(f"/{pi}")
 def pagina_inicial():
-    return render_template("listarestoque.html")  
+    return render_template(f"{pi}.html")  
 
 
 
@@ -62,10 +62,10 @@ def login():
                 # Verifica se a senha é um hash (começa com 'pbkdf2:sha256')
                 if senha_hash.startswith('pbkdf2:sha256'):
                     if check_password_hash(senha_hash, senha_user):
-                        return redirect(url_for("pagina_inicial"))
+                        return redirect(f"/{pi}")
                 # Se não for hash, verifica a senha diretamente (MUITO INSEGURO, mas necessário para o seu dado '1324')
                 elif senha_hash == senha_user:
-                     return redirect(url_for("pagina_inicial"))
+                     return redirect(f"/{pi}")
 
             return render_template("login.html", erro="Usuário ou senha incorretos!")
 
@@ -88,7 +88,7 @@ def login():
 
 
 #pagina de salvar cliente
-@app.route("/savecliente", methods=['GET', 'POST'])
+@app.route("/cadastro_cliente", methods=['GET', 'POST'])
 def create_client():
     conexao = None
     if request.method == 'POST':
@@ -121,7 +121,7 @@ def create_client():
             cliente_existente = cursor.fetchone()
 
             if cliente_existente:
-                 return render_template("paginainicial.html", erro="Cliente com este CPF ou Placa já cadastrado!")
+                 return render_template(f"{pi}.html", erro="Cliente com este CPF ou Placa já cadastrado!")
 
             # Ação 3: Uso de INSERT IGNORE para não falhar se a placa já existe
             sql_carros = "INSERT IGNORE INTO carros (placa_carro, modelo, fabricante) VALUES (%s, %s, %s)"
@@ -133,18 +133,18 @@ def create_client():
             conexao.commit()
             
             # Redireciona para a página inicial (ou para uma página de sucesso)
-            return redirect(url_for("pagina_inicial"))
+            return redirect(f"/{pi}")
 
         except mysql.connector.Error as err:
             print(f"Erro ao salvar cliente: {err}")
             conexao.rollback()
-            return render_template("paginainicial.html", erro=f"Erro no banco de dados: {err.msg}") 
+            return render_template(f"{pi}.html", erro=f"Erro no banco de dados: {err.msg}") 
     
         finally:
             if conexao and conexao.is_connected():
                 cursor.close()
                 conexao.close()
-    return render_template("paginainicial.html")                
+    return render_template("cadastro_cliente.html")                
 
 
 #listar clientes
@@ -171,7 +171,7 @@ def listar_clientes():
         
     except mysql.connector.Error as err:
         print(f"Erro ao listar estoque: {err}")
-        return render_template("paginainicial.html", erro="Erro ao carregar o estoque.")
+        return render_template(f"{pi}.html", erro="Erro ao carregar o estoque.")
     finally:
         if conn and conn.is_connected():
             cursor.close()
@@ -190,7 +190,7 @@ def delete_client():
     cpf_deletar = request.form['cpf_deletar']    
 
     if not cpf_deletar:
-        return render_template("paginainicial.html", erro="CPF para deleção não fornecido.")
+        return render_template(f"{pi}.html", erro="CPF para deleção não fornecido.")
 
     try:
         conexao = mysql.connector.connect(
@@ -226,7 +226,7 @@ def delete_client():
         
         # Verifica se alguma linha foi afetada para confirmar a exclusão
         if cursor.rowcount > 0:
-            return redirect(url_for("pagina_inicial")) # Redireciona para a página inicial
+            return redirect(f"/{pi}") # Redireciona para a página inicial
         else:
             return render_template("login.html", erro="Carro/Cliente não encontrado ou deleção falhou.")
 
@@ -266,7 +266,7 @@ def listar_estoque():
         
     except mysql.connector.Error as err:
         print(f"Erro ao listar estoque: {err}")
-        return render_template("paginainicial.html", erro="Erro ao carregar o estoque.")
+        return render_template(f"{pi}.html", erro="Erro ao carregar o estoque.")
     finally:
         if conn and conn.is_connected():
             cursor.close()

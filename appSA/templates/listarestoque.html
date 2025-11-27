@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/listarestoque.css"> 
+    <link rel="shortcut icon" type="\static\icone.png"> 
+
+
     <title>Lista de Estoque</title>
 
 </head>
 <body>
-
+    <a href="pagi">               <button></button>       </a>
     <h1>📦 Estoque de Peças</h1>
 
     {% if erro %}
@@ -43,7 +46,7 @@
     {% endif %}
     
     <p>
-        <a href="{{ url_for('pagina_inicial') }}">Voltar para a Página Inicial</a>
+        <a href="pagi">Voltar para a Página Inicial</a>
     </p>
 
 </body>
