@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/listarestoque.css"> 
+    <link rel="shortcut icon" type="\static\icone.png"> 
+
+
+    <title>Lista de Estoque</title>
+
+</head>
+<body>
+    <a href="pagi">               <button></button>       </a>
+    <h1>📦 Estoque de Peças</h1>
+
+    {% if erro %}
+        <p class="erro">Erro: {{ erro }}</p>
+    {% endif %}
+
+    {% if pecas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome da Peça</th>
+                    <th>Lote</th>
+                    <th>Validade</th>
+                    <th>Fornecedor</th>
+                    <th>Quantidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for peca in pecas %}
+                <tr>
+                    <td>{{ peca.nome_peca }}</td>
+                    <td>{{ peca.lote }}</td>
+                    <td>{{ peca.validade }}</td>
+                    <td>{{ peca.fornecedor }}</td>
+                    <td>{{ peca.quant_peca }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma peça encontrada no estoque ou o estoque está vazio.</p>
+    {% endif %}
+    
+    <p>
+        <a href="pagi">Voltar para a Página Inicial</a>
+    </p>
+
+</body>
+</html>

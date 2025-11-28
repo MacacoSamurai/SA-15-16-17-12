@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/cadastro_cliente.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="\static\icone.png"> 
+    <title>Cadastro De Cliente e Veículo</title>
+</head>
+
+<body>
+    <div class="base">
+        <h1>Cadastro de Cliente e Veículo:</h1>
+
+        <form action="/savecliente" method="POST"> 
+            
+            <h2>Dados do Cliente</h2>
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome_cliente" required> 
+
+            <label for="cpf">CPF:</label>
+            <input type="text" id="cpf" name="cpf_cliente" required>
+
+            <label for="celular">Celular:</label>
+            <input type="text" id="celular" name="celular_cliente" required>
+
+
+            <h2>Dados do Veículo</h2>
+            <label for="placa">Placa:</label>
+            <input type="text" id="placa" name="placa_carro" required>
+
+            <label for="modelo">Modelo:</label>
+            <input type="text" id="modelo" name="modelo_carro" required>
+
+            <label for="fabricante">Fabricante:</label>
+            <input type="text" id="fabricante" name="fabricante_carro" required>
+
+
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+</body>
+</html>
