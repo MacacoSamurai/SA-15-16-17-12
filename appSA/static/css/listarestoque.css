@@ -1,0 +1,46 @@
+body{
+    background-color: rgb(191, 175, 136);
+}
+
+
+table {
+    width: 80%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+}
+
+th, td {
+    border: 1px solid #ddd; 
+    padding: 8px; 
+    text-align: left; 
+}
+
+th { 
+    background-color: #f2f2f2; 
+}
+
+.erro {
+     color: red; 
+     font-weight: bold; 
+}
+.pagi{
+    margin-left:1px;
+    border-radius: 90px;
+    height: 40px;
+    width: 40px;
+    display: flex;          
+    justify-content: center; 
+    align-items: center;     
+}
+.home{
+    border-radius: 40px;
+    height: auto;
+    width: 157%;
+
+}
+tbody{
+    background-color: rgb(245, 225, 175);
+}
+th{
+    background-color: rgb(243, 211, 130);
+}
