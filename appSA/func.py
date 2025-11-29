@@ -1,6 +1,7 @@
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from main import app, CONFIG_DB
+from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
 import mysql.connector
 pi = str ("pagi")
@@ -12,6 +13,16 @@ DB_PASSWORD = CONFIG_DB['password']
 DB_NAME = CONFIG_DB['database'] 
 DB_PORT = CONFIG_DB['port'] 
 
+#função para a conexão mais simples com o db
+def db_connection():
+    return mysql.connector.connect(
+        host=DB_HOST, 
+        user=DB_USER, 
+        password=DB_PASSWORD,
+        database=DB_NAME, 
+        port=DB_PORT
+    )
+
 
 
 #pagina principal
@@ -21,10 +32,21 @@ def index():
     return redirect(url_for(f"login"))
 
 
+#requerimento de login para a segurança
+def login_required(f):  
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session: # <--- Mantenha 'user_id'
+            flash("Você precisa fazer login para acessar esta página.")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 
 #pagina inicial para a escolha das opções
 @app.route(f"/{pi}")
+@login_required
 def pagi():  
 
     erro = request.args.get('erro')
@@ -43,18 +65,11 @@ def login():
 
         conexao = None
         try:
-            conexao = mysql.connector.connect(
-                host=DB_HOST,   
-                user=DB_USER,
-                password=DB_PASSWORD,
-                database=DB_NAME,
-                port=DB_PORT
-            )
+            conexao = db_connection()
             cursor = conexao.cursor(dictionary=True)
 
-            query = "SELECT senha_user FROM funcionarios WHERE login_user = %s"
+            query = "SELECT id_func, senha_user FROM funcionarios WHERE login_user = %s"
             cursor.execute(query, (login_user,))
-
             funcionario = cursor.fetchone()
 
             if funcionario:
@@ -62,8 +77,9 @@ def login():
                 
                 # Verifica se a senha é um hash (começa com 'pbkdf2:sha256')
                 if check_password_hash(senha_hash_armazenada, senha_user):
-                    # Se o hash for válido
-                    return redirect(url_for('pagi'))
+                    session['user_id'] = funcionario['id_func']
+
+                    return redirect(url_for(f'{pi}'))
                 else:
                     # Se o hash for inválido
                     return render_template(f"{lg}.html", erro="Usuário ou senha inválidos!")
@@ -82,6 +98,15 @@ def login():
     return render_template(f"{lg}.html", erro="")  
 
 
+#logout,encerra a sessão de login
+@app.route("/logout")
+def logout():
+    # Limpa toda a sessão
+    session.clear() 
+    # session.pop('logged_in', None) # Alternativa para limpar apenas um item
+    return redirect(url_for(f'{lg}'))
+
+
 
 """
 <-------- Area De Clientes -------->
@@ -89,6 +114,7 @@ def login():
 
 #pagina de salvar cliente
 @app.route("/cadastro_cliente", methods=['GET', 'POST'])
+@login_required
 def cadastro_cliente():
     conexao = None
     if request.method == 'POST':
@@ -105,13 +131,7 @@ def cadastro_cliente():
         dados_clientes = (nome, cpf, celular, placa_carro)
 
         try:
-            conexao = mysql.connector.connect(
-                host=DB_HOST,   
-                user=DB_USER,
-                password=DB_PASSWORD,
-                database=DB_NAME,
-                port=DB_PORT
-            )
+            conexao = db_connection()
             cursor = conexao.cursor()
             
             sql_verify_cliente = "SELECT id_cliente FROM clientes WHERE cpf = %s OR placa_carro = %s"
@@ -121,7 +141,7 @@ def cadastro_cliente():
             cliente_existente = cursor.fetchone()
 
             if cliente_existente:
-                 return render_template(f"{pi}.html", erro="Cliente com este CPF ou Placa já cadastrado!")
+                 return render_template(f"cadastro_cliente.html", erro="Cliente com este CPF ou Placa já cadastrado!")
 
             # Ação 3: Uso de INSERT IGNORE para não falhar se a placa já existe
             sql_carros = "INSERT IGNORE INTO carros (placa_carro, modelo, fabricante) VALUES (%s, %s, %s)"
@@ -150,18 +170,13 @@ def cadastro_cliente():
 
 #pagina de editar clientes
 @app.route("/editar_cliente/<cpf_original>", methods=['GET', 'POST'])
+@login_required
 def editar_cliente(cpf_original):
     conexao = None
     cursor = None
 
     try:
-        conexao = mysql.connector.connect(
-            host=DB_HOST,   
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME,
-            port=DB_PORT
-        )
+        conexao = db_connection()
         cursor = conexao.cursor()
 
         if request.method == 'POST':
@@ -174,22 +189,21 @@ def editar_cliente(cpf_original):
             modelo = request.form['modelo_carro']
             fabricante = request.form['fabricante_carro']
 
-            cpf_original = request.form['cpf_oroginal']
+            cpf_original = request.form['cpf_original']
 
 
-            sql_placaCPF = "SELECT placa_carro FROM clientes WHERE cpf = (%s)"
-
+            sql_placaCPF = "SELECT placa_carro FROM clientes WHERE cpf = (%s)"  
             cursor.execute(sql_placaCPF, (cpf_original,))
             placa_original_data = cursor.fetchone()
         
             if placa_original_data is None:
-                return render_template(f"{pi}.html", erro=f"Cliente com CPF {cpf_original} não encontrado.")
+                return render_template("editar_cliente.html", erro=f"Cliente com CPF {cpf_original} não encontrado.", cliente={'cpf_original_url': cpf_original})
 
             placa_original = placa_original_data[0]
 
         
-            sql_update_cliente = "UPDATE clientes set nome = %s, cpf = %s, celular = %s, placa_carro = %s WHERE placa_carro = %s"
-            dados_clientes = (nome, cpf_novo, celular, placa_carro_nova, placa_original)
+            sql_update_cliente = "UPDATE clientes set nome = %s, cpf = %s, celular = %s, placa_carro = %s WHERE cpf_original = %s"
+            dados_clientes = (nome, cpf_novo, celular, placa_carro_nova, cpf_original)
             cursor.execute(sql_update_cliente, dados_clientes,)
         
             # 2. Deletar da tabela `carros`
@@ -202,7 +216,7 @@ def editar_cliente(cpf_original):
             return redirect(f"{pi}")
 
         else:
-            # --- 🔍 FASE GET: Buscar dados para pré-preencher o formulário ---
+            # --- FASE GET: Buscar dados para pré-preencher o formulário ---
             
             # Query que junta cliente e carro (necessário para pegar o modelo/fabricante)
             sql_select = """
@@ -236,10 +250,10 @@ def editar_cliente(cpf_original):
         if conexao:
             conexao.rollback()
         # Use um template adequado para a mensagem de erro
-        return render_template("pagina_de_clientes.html", erro=f"Erro no banco de dados: Não foi possível editar o cliente. Detalhe: {err}")
+        return render_template("editar_cliente.html", erro=f"Erro no banco de dados: Não foi possível editar o cliente. Detalhe: {err}")
     
     finally:
-        if conexao :
+        if cursor is not None:
             cursor.close()
         if conexao and conexao.is_connected():
             conexao.close()
@@ -248,17 +262,13 @@ def editar_cliente(cpf_original):
 
 #pagina de listar clientes
 @app.route("/listar_clientes")
+@login_required
 def listar_clientes():
     conn = None
     clientes = []
     try:
         # 1. Estabelecer conexão com o DB
-        conn = mysql.connector.connect(
-            host=DB_HOST,   
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME
-        )
+        conn = db_connection()
         cursor = conn.cursor(dictionary=True)
         
         # 2. Query para selecionar todos os itens do estoque
@@ -286,6 +296,7 @@ def listar_clientes():
 
 #pagina de deletar clientes
 @app.route("/delete_cliente", methods=['POST'])
+@login_required
 def delete_cliente():
     conexao = None
     
@@ -296,13 +307,7 @@ def delete_cliente():
         return render_template(f"{pi}.html", erro="CPF para deleção não fornecido.")
 
     try:
-        conexao = mysql.connector.connect(
-            host=DB_HOST,   
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME,
-            port=DB_PORT
-        )
+        conexao = db_connection()
         cursor = conexao.cursor()
 
         sql_placaCPF = "SELECT placa_carro FROM clientes WHERE cpf = (%s)"
@@ -339,7 +344,7 @@ def delete_cliente():
     except mysql.connector.Error as err:
         print(f"Erro ao deletar cliente: {err}")
         conexao.rollback()
-        return render_template(f"{pi}", erro=f"Erro no banco de dados: Não foi possível deletar o cliente, verifique se há registros de serviço associados.") 
+        return render_template(f"{pi}.html", erro=f"Erro no banco de dados: Não foi possível deletar o cliente, verifique se há registros de serviço associados.") 
     
     finally:
         if conexao and conexao.is_connected():
@@ -353,8 +358,9 @@ def delete_cliente():
 """
 
 #pagina para cadastrar funcionários
-@app.route("/cadastro_funcionario", methods=['GET', 'POST'])
-def create_funcionario():
+@app.route("/cadastro_func", methods=['GET', 'POST'])
+@login_required
+def cadastro_func():
     conexao = None
     if request.method == 'POST':
         nome = request.form['nome_func']     
@@ -368,10 +374,7 @@ def create_funcionario():
         dados_funcionario = (nome, login_user, senha_hash, cargo, cpf)
 
         try:
-            conexao = mysql.connector.connect(
-                host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-                database=DB_NAME, port=DB_PORT
-            )
+            conexao = db_connection()
             cursor = conexao.cursor()
             
             sql_verify = "SELECT id_func FROM funcionarios WHERE login_user = %s OR cpf = %s"
@@ -379,7 +382,7 @@ def create_funcionario():
             funcionario_existente = cursor.fetchone()
 
             if funcionario_existente:
-                 return render_template("cadastro_funcionario.html", erro="Funcionário com este Login ou CPF já cadastrado!")
+                 return render_template("cadastro_func.html", erro="Funcionário com este Login ou CPF já cadastrado!")
 
             sql_insert = "INSERT INTO funcionarios (nome_func, login_user, senha_user, cargo, cpf) VALUES (%s, %s, %s, %s, %s)" 
             cursor.execute(sql_insert, dados_funcionario)
@@ -391,26 +394,25 @@ def create_funcionario():
         except mysql.connector.Error as err:
             print(f"Erro ao salvar funcionário: {err}")
             conexao.rollback()
-            return render_template("cadastro_funcionario.html", erro=f"Erro no banco de dados: {err.msg}") 
+            return render_template("cadastro_func.html", erro=f"Erro no banco de dados: {err.msg}") 
     
         finally:
             if conexao and conexao.is_connected():
                 cursor.close()
                 conexao.close()
-    return render_template("cadastro_funcionario.html")
+
+    return render_template("cadastro_func.html")
 
 
 
 #pagina para listar funcionários
-@app.route("/listarfuncionarios")
-def listar_funcionarios():
+@app.route("/listar_func")
+@login_required
+def listar_func():
     conn = None
     funcionarios = []
     try:
-        conn = mysql.connector.connect(
-            host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-            database=DB_NAME, port=DB_PORT
-        )
+        conn = db_connection()
         cursor = conn.cursor(dictionary=True)
         
         query = "SELECT id_func, nome_func, login_user, cargo, cpf FROM funcionarios"
@@ -426,20 +428,18 @@ def listar_funcionarios():
             cursor.close()
             conn.close()
 
-    return render_template("listarfuncionarios.html", funcionarios=funcionarios)
+    return render_template("listar_func.html", funcionarios=funcionarios)
 
 
 
 #pagina para editar funcionários
-@app.route("/editar_funcionario/<int:id_func_original>", methods=['GET', 'POST'])
-def update_funcionario(id_func_original):
+@app.route("/editar_func/<int:id_func_original>", methods=['GET', 'POST'])
+@login_required
+def editar_func(id_func_original):
     conexao = None
     
     try:
-        conexao = mysql.connector.connect(
-            host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-            database=DB_NAME, port=DB_PORT
-        )
+        conexao = db_connection()
         cursor = conexao.cursor()
 
         if request.method == 'POST':
@@ -454,14 +454,15 @@ def update_funcionario(id_func_original):
                  sql_update = "UPDATE funcionarios SET nome_func = %s, login_user = %s, cargo = %s, cpf = %s WHERE id_func = %s"
                  dados_func = (nome, login_user, cargo, cpf, id_func)
             else:
+                 senha_hash = generate_password_hash(senha_user)
                  sql_update = "UPDATE funcionarios SET nome_func = %s, login_user = %s, senha_user = %s, cargo = %s, cpf = %s WHERE id_func = %s"
-                 dados_func = (nome, login_user, senha_user, cargo, cpf, id_func)
+                 dados_func = (nome, login_user, senha_hash, cargo, cpf, id_func)
 
             cursor.execute(sql_update, dados_func)
             conexao.commit()
 
             if cursor.rowcount > 0:
-                return redirect(f"/listarfuncionarios") 
+                return redirect(url_for('listar_func')) 
             else:
                 return render_template(f"{pi}.html", erro="Funcionário não encontrado ou nenhum dado alterado.")
 
@@ -482,7 +483,7 @@ def update_funcionario(id_func_original):
                 'cpf': funcionario_data[4]
             }
             
-            return render_template("editar_funcionario.html", funcionario=funcionario) 
+            return render_template("editar_func.html", funcionario=funcionario) 
 
     except mysql.connector.Error as err:
         print(f"Erro ao editar funcionário: {err}")
@@ -499,7 +500,8 @@ def update_funcionario(id_func_original):
 
 #pagina para deletar funcionários
 @app.route("/delete_funcionario", methods=['POST'])
-def delete_funcionario():
+@login_required
+def delete_func():
     conexao = None
     id_deletar = request.form.get('id_deletar')    
 
@@ -507,10 +509,7 @@ def delete_funcionario():
         return render_template(f"{pi}.html", erro="ID do funcionário para deleção não fornecido.")
 
     try:
-        conexao = mysql.connector.connect(
-            host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-            database=DB_NAME, port=DB_PORT
-        )
+        conexao = db_connection()
         cursor = conexao.cursor()
 
         sql_delete = "DELETE FROM funcionarios WHERE id_func = %s"
@@ -519,7 +518,7 @@ def delete_funcionario():
         conexao.commit()
         
         if cursor.rowcount > 0:
-            return redirect(f"/listarfuncionarios") 
+            return redirect(f"/listar_func") 
         else:
             return render_template(f"{pi}.html", erro="Funcionário não encontrado ou deleção falhou.")
 
@@ -541,7 +540,8 @@ def delete_funcionario():
 
 #pagina para cadastrar peças
 @app.route("/cadastro_peca", methods=['GET', 'POST'])
-def create_peca():
+@login_required
+def cadastro_peca():
     conexao = None
     if request.method == 'POST':
         nome_peca = request.form['nome_peca']     
@@ -553,10 +553,7 @@ def create_peca():
         dados_peca = (nome_peca, lote, validade, fornecedor, quant_peca)
 
         try:
-            conexao = mysql.connector.connect(
-                host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-                database=DB_NAME, port=DB_PORT
-            )
+            conexao = db_connection()
             cursor = conexao.cursor()
             
             sql_insert = "INSERT INTO estoque (nome_peca, lote, validade, fornecedor, quant_peca) VALUES (%s, %s, %s, %s, %s)" 
@@ -581,21 +578,17 @@ def create_peca():
 
 #pagina para listar estoque
 @app.route("/listar_estoque")
+@login_required
 def listar_estoque():
     conn = None
     pecas = []
     try:
         # 1. Estabelecer conexão com o DB
-        conn = mysql.connector.connect(
-            host=DB_HOST,   
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME
-        )
+        conn = db_connection()
         cursor = conn.cursor(dictionary=True)
         
         # 2. Query para selecionar todos os itens do estoque
-        query = "SELECT nome_peca, lote, validade, fornecedor, quant_peca FROM estoque"
+        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca FROM estoque"
         cursor.execute(query)
         
         # 3. Armazenar os resultados
@@ -616,14 +609,12 @@ def listar_estoque():
 
 #pagina para editar peças
 @app.route("/editar_peca/<int:id_peca_original>", methods=['GET', 'POST'])
-def update_peca(id_peca_original):
+@login_required
+def editar_peca(id_peca_original):
     conexao = None
     
     try:
-        conexao = mysql.connector.connect(
-            host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-            database=DB_NAME, port=DB_PORT
-        )
+        conexao = db_connection()
         cursor = conexao.cursor()
 
         if request.method == 'POST':
@@ -640,10 +631,7 @@ def update_peca(id_peca_original):
             cursor.execute(sql_update, dados_peca)
             conexao.commit()
 
-            if cursor.rowcount > 0:
-                return redirect(f"/listarestoque") 
-            else:
-                return render_template(f"{pi}.html", erro="Peça não encontrada ou nenhum dado alterado.")
+            return redirect(f"/listar_estoque") 
 
         else:
             # --- FASE GET: Buscar dados para pré-preencher o formulário ---
@@ -680,6 +668,7 @@ def update_peca(id_peca_original):
 
 #pagina para deletar peças
 @app.route("/delete_peca", methods=['POST'])
+@login_required
 def delete_peca():
     conexao = None
     id_deletar = request.form.get('id_deletar')    
@@ -688,10 +677,7 @@ def delete_peca():
         return render_template(f"{pi}.html", erro="ID da peça para deleção não fornecido.")
 
     try:
-        conexao = mysql.connector.connect(
-            host=DB_HOST, user=DB_USER, password=DB_PASSWORD,
-            database=DB_NAME, port=DB_PORT
-        )
+        conexao = db_connection()
         cursor = conexao.cursor()
 
         sql_delete = "DELETE FROM estoque WHERE id_peca = %s"
