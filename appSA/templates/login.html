@@ -16,6 +16,9 @@
     <div class="base">
 
         <h1 class="txt">LOGIN</h1>
+        {% if erro %}
+            <p style="color: red; text-align: center;">{{ erro }}</p>
+        {% endif %}
 
         <form action="/login" method="POST">
 
@@ -24,7 +27,7 @@
 
 
             <h2 class="se">Digite sua Senha</h2>
-            <input type="text" id="senha_user" name="senha" class="campo" required placeholder="Senha"><br><br>
+            <input type="password" id="senha_user" name="senha" class="campo" required placeholder="Senha"><br><br>
 
             <button type="submit" class="botao" >Enviar</button>
                

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Funcionário</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
+</head>
+
+<body>
+    <div class="base">
+        <h1 class="txt">NOVO FUNCIONÁRIO</h1>
+
+        {% if erro %}
+            <p style="color: red; text-align: center;">{{ erro }}</p>
+        {% endif %}
+        {% if sucesso %}
+            <p style="color: lightgreen; text-align: center;">{{ sucesso }}</p>
+        {% endif %}
+
+        <form action="/cadastro_func" method="POST">
+
+            <h2 class="us">Nome Completo</h2>
+            <input type="text" name="nome_func" class="campo" required placeholder="Nome do Funcionário">
+
+            <h2 class="us">CPF</h2>
+            <input type="text" name="cpf" class="campo" required placeholder="Digite o CPF">
+
+            <h2 class="us">Cargo</h2>
+            <input type="text" name="cargo" class="campo" required placeholder="Ex: Mecânico, Gerente">
+
+            <h2 class="us">Usuário de Login</h2>
+            <input type="text" name="login_user" class="campo" required placeholder="Usuário para entrar no sistema">
+
+            <h2 class="se">Senha</h2>
+            <input type="password" name="senha_user" class="campo" required placeholder="Senha de acesso">
+
+            <br><br>
+            <button type="submit" class="botao">CADASTRAR</button>
+            
+            <br><br>
+            <a href="/login" style="color: white; text-decoration: none; display: block; text-align: center;">Voltar para Login</a>
+        </form>
+    </div>
+</body>
+</html> 

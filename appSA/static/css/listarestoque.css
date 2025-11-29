@@ -44,3 +44,19 @@ tbody{
 th{
     background-color: rgb(243, 211, 130);
 }
+.editar{
+    cursor: pointer; 
+    background-color: #007bff; 
+    color: white; 
+    border: none; 
+    padding: 5px; 
+    border-radius: 4px;
+}
+.delete{
+    cursor: pointer; 
+    background-color: #dc3545; 
+    color: white; 
+    border: none; 
+    padding: 5px; 
+    border-radius: 4px;
+}

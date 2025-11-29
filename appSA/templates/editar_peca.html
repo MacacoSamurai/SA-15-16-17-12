@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/listarestoque.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
+    <title>Editar Estoque</title>
+</head>
+<body>
+
+    <div class="base">
+        <h1>Editar Peça: {{ peca.nome_peca }}</h1>
+
+        <form action="/editar_peca/{{ peca.id_peca }}" method="POST"> 
+            
+            <input type="hidden" name="id_peca_editar" value="{{ peca.id_peca }}">
+
+            <h2>Dados da Peça</h2>
+
+            <label for="nome">Nome da Peça:</label>
+            <input type="text" id="nome" name="nome_peca" value="{{ peca.nome_peca }}"  required> 
+
+            <label for="lote">Lote:</label>
+            <input type="text" id="lote" name="lote" value="{{ peca.lote }}"  required>
+ 
+            <label for="validade">Validade:</label>
+            <input type="text" id="validade" name="validade" value="{{ peca.validade }}"  required>
+
+            <label for="fornecedor">Fornecedor:</label>
+            <input type="text" id="fornecedor" name="fornecedor" value="{{ peca.fornecedor }}"  required>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quant_peca" value="{{ peca.quant_peca }}"  required>
+
+            <br><br>
+            <button type="submit" class="botao">Salvar Alterações</button>
+            
+            <br><br>
+            <a href="/listarestoque" style="color:white; display:block; text-align:center; text-decoration:none;">Cancelar</a>
+        </form>
+    </div>
+
+</body>
+</html>

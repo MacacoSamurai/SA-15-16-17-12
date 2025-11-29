@@ -25,7 +25,8 @@
 
         <table>
             <thead class="legenda">
-                <tr>
+                <tr>    
+                    <th>Identificador</th>
                     <th>Nome da Peça</th>
                     <th>Lote</th>
                     <th>Validade</th>
@@ -38,12 +39,29 @@
             <tbody>
                 {% for peca in pecas %}
                 <tr>
+                    <td>{{ peca.id_peca }}</td>
                     <td>{{ peca.nome_peca }}</td>
                     <td>{{ peca.lote }}</td>
                     <td>{{ peca.validade }}</td>
                     <td>{{ peca.fornecedor }}</td>
                     <td>{{ peca.quant_peca }}</td>
+                    <td style="display: flex; gap: 5px; justify-content: center;">
+    
+                        <a href="/editar_peca/{{ peca.id_peca }}">
+                            <button  class="editar" >
+                                ✏️
+                            </button>
+                        </a>
                     
+                        <form action="/delete_peca" method="POST" style="margin: 0;">
+                            <input type="hidden" name="id_deletar" value="{{ peca.id_peca }}">
+                            
+                            <button type="submit" onclick="return confirm('Tem certeza que quer apagar esta peça?')"  class="delete">
+                                🗑️
+                            </button>
+                        </form>
+                    
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
