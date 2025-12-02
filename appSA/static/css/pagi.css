@@ -9,10 +9,12 @@ body{
     width: 400px;
     height: 420px;
     padding-left: 50px;
-    margin-top: 10px;
+    margin-top: 50px;
     border-radius: 13px;
-
 }
+
+
+
 
 .botao{
     margin-left: 130px;
@@ -24,20 +26,41 @@ body{
 }
 
 .logout{
-    margin-left:-45%;
+    margin-top: 2%;
+    margin-left:-56%;
     border-radius: 90px;
+    height: 55px;
+    width: 55px;
+    display: flex;          
+    justify-content: center; 
+    align-items: center;     
+    background-color: rgb(177, 165, 135);
+}
+.home{
+    margin-left: -10%;
+    border-radius: 10px;
     height: 40px;
     width: 40px;
     display: flex;          
     justify-content: center; 
-    align-items: center;     
+    align-items: center;
 }
-.home{
-    border-radius: 40px;
-    height: auto;
-    width: 150%;
-
+.C_CL,.L_CL,.C_PE,.L_ES,.C_FU,.L_FU{
+    background-color:rgb(229 216 185) ;
+    border-radius: 2px;
 }
 
 
 
+
+.R_SE{
+    background-color: rgb(139, 126, 92);
+    width: 200px;
+    height: 50px;
+    border-radius: 13px;
+    margin-left: 12.3%;
+    margin-top: 7PX;
+}
+h3{
+    margin-top: 13px;
+}
