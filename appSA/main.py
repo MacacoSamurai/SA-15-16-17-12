@@ -3,6 +3,8 @@ import mysql.connector
 
 app = Flask(__name__)
     
+app.secret_key = "diego_of_war"
+
 CONFIG_DB = {
     'host': 'localhost',
     'port': '3406',

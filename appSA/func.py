@@ -13,6 +13,12 @@ DB_PASSWORD = CONFIG_DB['password']
 DB_NAME = CONFIG_DB['database'] 
 DB_PORT = CONFIG_DB['port'] 
 
+
+
+"""
+-------- Funções Gerais --------
+"""
+
 #função para a conexão mais simples com o db
 def db_connection():
     return mysql.connector.connect(
@@ -23,14 +29,40 @@ def db_connection():
         port=DB_PORT
     )
 
+#verifica se é gerente
+def cargos():
+    user_id = session.get('user_id') 
+    
+    if not user_id:
+        return False # Não logado
 
+    conexao = None
+    cursor = None # Inicializa para garantir que o 'finally' funcione
+    try:
+        conexao = db_connection()
+        cursor = conexao.cursor() # CORRIGIDO: Deve ser chamado como método ()
+        
+        # Busca o cargo pelo id_func (que é o que está armazenado na session)
+        query = "SELECT cargo FROM funcionarios WHERE id_func = %s"
+        cursor.execute(query, (user_id,)) # Usa o user_id da sessão
+        
+        cargo_data = cursor.fetchone() # Retorna uma tupla (ex: ('gerente',))
 
-#pagina principal
-@app.route("/")
-def index():
-    # Ação 2: Corrigido o endpoint de redirecionamento para o nome da função
-    return redirect(url_for(f"login"))
+        # CORRIGIDO: Verifica se o resultado existe E se o primeiro item da tupla é "gerente"
+        if cargo_data and cargo_data[0] == "gerente": 
+            return True
+        else:
+            return False
 
+    except mysql.connector.Error as err:
+        print(f"Erro ao buscar cargo: {err}")
+        return False
+    
+    finally:
+        if 'cursor' in locals() and cursor: 
+            cursor.close()
+        if conexao and conexao.is_connected():
+            conexao.close()
 
 #requerimento de login para a segurança
 def login_required(f):  
@@ -41,6 +73,28 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
+#Requerimento de gerencia para segurança
+def gerente_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # 2. Chama a função cargos() que verifica se o usuário é gerente
+        if not cargos():
+            flash("Acesso negado: Você não tem permissão de Gerente para esta ação.")
+            # Redireciona para a página principal (ou outra página de erro)
+            return redirect(url_for('pagi')) 
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+
+
+#URL inicial
+@app.route("/")
+def index():
+    # Ação 2: Corrigido o endpoint de redirecionamento para o nome da função
+    return redirect(url_for(f"login"))
 
 
 
@@ -58,14 +112,20 @@ def pagi():
 #pagina de login
 @app.route(f"/{lg}", methods=["GET", "POST"])
 def login():
+
     if request.method == 'POST':
 
         login_user = request.form['usuario']
         senha_user = request.form['senha']        
 
+
         conexao = None
         try:
             conexao = db_connection()
+
+
+
+
             cursor = conexao.cursor(dictionary=True)
 
             query = "SELECT id_func, senha_user FROM funcionarios WHERE login_user = %s"
@@ -96,6 +156,7 @@ def login():
                 conexao.close()
 
     return render_template(f"{lg}.html", erro="")  
+
 
 
 #logout,encerra a sessão de login
@@ -267,30 +328,45 @@ def listar_clientes():
     conn = None
     clientes = []
     try:
-        # 1. Estabelecer conexão com o DB
+        # Estabelece conexão com o DB
         conn = db_connection()
         cursor = conn.cursor(dictionary=True)
         
-        # 2. Query para selecionar todos os itens do estoque
-        query = """
-        SELECT c.nome_cliente, c.cpf, c.celular, ca.placa_carro, ca.modelo, ca.fabricante 
-        FROM clientes c
-        JOIN carros ca ON c.placa_carro = ca.placa_carro
-        """
-        cursor.execute(query)
+        if cargos():
+        # 1. Query para selecionar 5 itens do estoque
+            query1 = """
+            SELECT c.nome_cliente, c.cpf, c.celular, ca.placa_carro, ca.modelo, ca.fabricante 
+            FROM clientes c
+            JOIN carros ca ON c.placa_carro = ca.placa_carro
+            """
+            cursor.execute(query1)
 
-        clientes = cursor.fetchall()
+            clientes = cursor.fetchall()
+
+        else:
+        # 2. Query para selecionar todos os itens do estoque
+            query2 = """
+            SELECT c.nome_cliente, c.cpf, c.celular, ca.placa_carro, ca.modelo, ca.fabricante 
+            FROM clientes c
+            JOIN carros ca ON c.placa_carro = ca.placa_carro
+            LIMIT 5
+            """
+            cursor.execute(query2)
+
+            clientes = cursor.fetchall()
+
+
 
     except mysql.connector.Error as err:
-        print(f"Erro ao listar estoque: {err}")
-        return render_template(f"{pi}.html", erro="Erro ao carregar o estoque.")
+        print(f"Erro ao listar clientes: {err}")
+        return render_template(f"{pi}.html", erro="Erro ao listar clientes.")
     finally:
         if conn and conn.is_connected():
             cursor.close()
             conn.close()
 
-    # 4. Redirecionar para uma nova página de visualização do estoque (que precisa ser criada)
-    return render_template("listarclientes.html", clientes=clientes)
+    # Redirecionar para uma nova página de visualização dos clientes 
+    return render_template("listar_clientes.html", clientes=clientes)
 
 
 
@@ -300,7 +376,6 @@ def listar_clientes():
 def delete_cliente():
     conexao = None
     
-
     cpf_deletar = request.form['cpf_deletar']    
 
     if not cpf_deletar:
@@ -310,8 +385,8 @@ def delete_cliente():
         conexao = db_connection()
         cursor = conexao.cursor()
 
-        sql_placaCPF = "SELECT placa_carro FROM clientes WHERE cpf = (%s)"
 
+        sql_placaCPF = "SELECT placa_carro FROM clientes WHERE cpf = (%s)"
         cursor.execute(sql_placaCPF, (cpf_deletar,))
         resultado = cursor.fetchone()
         
@@ -320,16 +395,15 @@ def delete_cliente():
 
         placa = resultado[0]
 
+
         sql_delete_registros = "DELETE FROM registro_servico WHERE placa = %s"
         cursor.execute(sql_delete_registros, (placa,))
 
-        # 1. Deletar da tabela `clientes` (referência ao carro)
-        # Se houver registros em `registro_servico` para este cliente/carro, 
-        # a deleção falhará a menos que você as exclua primeiro ou configure ON DELETE CASCADE.
+        
         sql_delete_cliente = "DELETE FROM clientes WHERE placa_carro = %s"
         cursor.execute(sql_delete_cliente, (placa,))
         
-        # 2. Deletar da tabela `carros`
+
         sql_delete_carro = "DELETE FROM carros WHERE placa_carro = %s"
         cursor.execute(sql_delete_carro, (placa,))
         
@@ -359,8 +433,11 @@ def delete_cliente():
 
 #pagina para cadastrar funcionários
 @app.route("/cadastro_func", methods=['GET', 'POST'])
-@login_required
+@login_required 
+@gerente_required #só funciona se for gerente
 def cadastro_func():
+    if cargos == True:
+        return
     conexao = None
     if request.method == 'POST':
         nome = request.form['nome_func']     
@@ -408,6 +485,7 @@ def cadastro_func():
 #pagina para listar funcionários
 @app.route("/listar_func")
 @login_required
+@gerente_required
 def listar_func():
     conn = None
     funcionarios = []
@@ -435,6 +513,7 @@ def listar_func():
 #pagina para editar funcionários
 @app.route("/editar_func/<int:id_func_original>", methods=['GET', 'POST'])
 @login_required
+@gerente_required
 def editar_func(id_func_original):
     conexao = None
     
@@ -501,6 +580,7 @@ def editar_func(id_func_original):
 #pagina para deletar funcionários
 @app.route("/delete_funcionario", methods=['POST'])
 @login_required
+@gerente_required
 def delete_func():
     conexao = None
     id_deletar = request.form.get('id_deletar')    
@@ -561,7 +641,7 @@ def cadastro_peca():
             
             conexao.commit()
             
-            return redirect(f"/listarestoque")
+            return redirect(f"/listar_estoque")
 
         except mysql.connector.Error as err:
             print(f"Erro ao salvar peça: {err}")
@@ -603,7 +683,7 @@ def listar_estoque():
             conn.close()
 
     # 4. Redirecionar para uma nova página de visualização do estoque (que precisa ser criada)
-    return render_template(f"listarestoque.html", pecas=pecas)
+    return render_template(f"listar_estoque.html", pecas=pecas)
 
 
 
@@ -686,7 +766,7 @@ def delete_peca():
         conexao.commit()
         
         if cursor.rowcount > 0:
-            return redirect(f"/listarestoque") 
+            return redirect(f"/listar_estoque") 
         else:
             return render_template(f"{pi}.html", erro="Peça não encontrada ou deleção falhou.")
 
@@ -700,3 +780,71 @@ def delete_peca():
             cursor.close()
             conexao.close()
 
+
+
+"""
+--------Registro de serviços--------
+"""
+
+@app.route("/registro_servico", methods=['GET', 'POST'])
+@login_required
+def registro_servico():
+    conexao = None
+    if request.method == 'POST':
+        
+        diagnostico = request.form['diagnostico']
+        pecas_subs  = request.form['pecas_subs']
+        func_id     = session.get('user_id') 
+        prazo       = request.form['prazo'] # Recebido como string (e.g., 'YYYY-MM-DD HH:MM:SS')
+        realizacao  = request.form['realizacao'] 
+
+        
+        cpf_cliente = request.form['cpf_cliente']
+        
+        
+        valor_pecas = float(request.form.get('valor_pecas', 0.0))
+        valor_servico = float(request.form.get('valor_servico', 0.0))
+        
+        valor_total = valor_pecas + valor_servico
+
+        try:
+            conexao = db_connection()
+            cursor = conexao.cursor()
+
+            
+            sql_cliente_carro = "SELECT id_cliente, placa_carro FROM clientes WHERE cpf = %s"
+            cursor.execute(sql_cliente_carro, (cpf_cliente,))
+            cliente_data = cursor.fetchone()
+
+            if not cliente_data:
+                 return render_template("registro_servico.html", erro="Cliente com este CPF não encontrado!")
+
+            cliente_id = cliente_data[0]
+            placa_carro = cliente_data[1]
+
+
+            sql_insert = """
+            INSERT INTO registro_servico 
+            (diagnostico, pecas_subs, func_id, prazo, realizacao, cliente, placa) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """ 
+            dados_servico = (diagnostico, pecas_subs, func_id, prazo, realizacao, cliente_id, placa_carro)
+            cursor.execute(sql_insert, dados_servico)
+            
+            conexao.commit()
+            
+            return redirect(url_for('pagi', sucesso=f"Serviço registrado com sucesso! Valor Total (Mão de Obra + Peças): R$ {valor_total:.2f}"))
+
+        except mysql.connector.Error as err:
+            print(f"Erro ao registrar serviço: {err}")
+            conexao.rollback()
+            return render_template("registro_servico.html", erro=f"Erro no banco de dados: {err.msg}") 
+    
+        finally:
+            if conexao and conexao.is_connected():
+                cursor.close()
+                conexao.close()
+
+    # FASE GET: Exibir o formulário
+    return render_template("registro_servico.html")
+    
