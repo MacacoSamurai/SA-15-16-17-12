@@ -1,0 +1,10 @@
+<div class="delete-section">
+    <hr>
+    <h3>Deletar Cliente por CPF</h3>
+    
+    <form action="delete_cliente.html" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar o cliente? Esta ação é irreversível.');">
+        <label for="cpf_del">CPF do Cliente:</label>
+        <input type="text" id="cpf_del" name="cpf_deletar" required>
+        <button type="submit">Deletar Cliente</button>
+    </form>
+</div>

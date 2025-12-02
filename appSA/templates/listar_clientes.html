@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/listar_clientes.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
+
+    <title>Lista de Clientes</title>
+</head>
+
+<body>
+    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="home"></button></a>
+
+    <h1>👤 Lista de Clientes</h1>
+
+    {% if erro %}
+        <p class="erro">Erro: {{ erro }}</p>
+    {% endif %}
+
+    {% if clientes %}
+
+        <table>
+            <thead class="legenda">
+                <tr>    
+                    <th>Nome do Cliente</th>
+                    <th>CPF</th>
+                    <th>Celular</th>
+                    <th>||</th>
+                    <th>Placa do Carro</th>
+                    <th>Modelo / Fabricante</th>
+                    <th>Opções</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td>{{ cliente.nome_cliente }}</td>
+                    <td>{{ cliente.cpf }}</td>
+                    <td>{{ cliente.celular }}</td>
+                    <td>||</td>
+                    <td>{{ cliente.placa_carro }}</td>
+                    <td>{{ cliente.modelo }} / {{ cliente.fabricante }}</td>
+                    
+                    <td style="display: flex; gap: 5px; justify-content: center;">
+    
+                        <a href="/editar_cliente/{{ cliente.cpf }}">
+                            <button class="editar">
+                                ✏️
+                            </button>
+                        </a>
+                    
+                        <form action="/delete_cliente" method="POST" style="margin: 0;">
+                            <input type="hidden" name="cpf_deletar" value="{{ cliente.cpf }}">
+                            
+                            <button type="submit" onclick="return confirm('Tem certeza que quer apagar este cliente e o carro associado?')" class="delete">
+                                🗑️
+                            </button>
+                        </form>
+                    
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    {% else %}
+        <p>Nenhum cliente encontrado na base de dados.</p>
+    {% endif %}
+
+</body>
+</html>

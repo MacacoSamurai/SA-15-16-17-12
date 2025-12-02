@@ -28,7 +28,11 @@
             <input type="text" name="cpf" class="campo" required placeholder="Digite o CPF">
 
             <h2 class="us">Cargo</h2>
-            <input type="text" name="cargo" class="campo" required placeholder="Ex: Mecânico, Gerente">
+            <select name="cargo" id="cargo" class="campo" required>
+                <option value="" disabled selected>Selecione...</option>
+                <option value="funcionario">Funcionário</option>
+                <option value="gerente">Gerente</option>
+            </select>
 
             <h2 class="us">Usuário de Login</h2>
             <input type="text" name="login_user" class="campo" required placeholder="Usuário para entrar no sistema">
@@ -38,7 +42,7 @@
 
             <br><br>
             <button type="submit" class="botao">CADASTRAR</button>
-            
+
             <br><br>
             <a href="/login" style="color: white; text-decoration: none; display: block; text-align: center;">Voltar para Login</a>
         </form>
