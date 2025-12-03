@@ -11,6 +11,12 @@ body{
     border-radius: 13px;
 
 }
+.home{
+    border-radius: 40px;
+    height: auto;
+    width: 157%;
+
+}
 .txt{
     padding-top: 35px;
     margin-left: 115px;

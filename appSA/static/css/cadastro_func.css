@@ -9,7 +9,7 @@ body{
     height: 440px;
     padding-left: 50px;
     border-radius: 13px;
-    padding-top: 1%;
+
 }
 .pagi{
     margin-top:-6.7%;
@@ -19,7 +19,7 @@ body{
     width: 40px;
     display: flex;          
     justify-content: center; 
-    align-items: center;    
+    align-items: center;     
 }
 .home{
     border-radius: 40px;
@@ -29,7 +29,7 @@ body{
 }
 .botao{
     margin-top: 10px;
-    margin-left: 35%;
+    margin-left: 30%;
     height: 50px;
     width: 75px;
     border-radius: 8px;
@@ -37,13 +37,6 @@ body{
     color: white;
 }
 .grp1{
-    margin-left: 25%;
-
+    margin-left: 20%;
     
-}
-.grp2{
-    margin-left: 25%;
-}
-h1{
-    margin-left: 2.2%;
 }

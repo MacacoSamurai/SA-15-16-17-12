@@ -13,10 +13,9 @@
 
 
 <body>
-    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="home"></button></a>
-
+    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="imgH"></button></a>
     <h1>📦 Estoque de Peças</h1>
-
+    <a href="cadastro_peca" class="mais"><button class="mais"><img src="\static\imagens\mais.png" class="imgM"></button></a>
     {% if erro %}
         <p class="erro">Erro: {{ erro }}</p>
     {% endif %}
@@ -45,7 +44,7 @@
                     <td>{{ peca.validade }}</td>
                     <td>{{ peca.fornecedor }}</td>
                     <td>{{ peca.quant_peca }}</td>
-                    <td style="display: flex; gap: 5px; justify-content: center;">
+                    <td class="opcao">
     
                         <a href="/editar_peca/{{ peca.id_peca }}">
                             <button  class="editar" >

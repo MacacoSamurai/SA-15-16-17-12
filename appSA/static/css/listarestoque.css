@@ -32,10 +32,27 @@ th {
     justify-content: center; 
     align-items: center;     
 }
-.home{
+.mais{
+    margin-left:1px;
+    border-radius: 90px;
+    height: 40px;
+    width: 40px;
+    display: flex;          
+    justify-content: center; 
+    align-items: center;   
+    background-color: black;
+    border-style: none;  
+}
+.imgH{
     border-radius: 40px;
     height: auto;
-    width: 157%;
+    width: 190%;
+
+}
+.imgM{
+    border-radius: 40px;
+    height: auto;
+    width: 120%;
 
 }
 tbody{
@@ -59,4 +76,9 @@ th{
     border: none; 
     padding: 5px; 
     border-radius: 4px;
+}
+.opcao{
+    display: flex; 
+    gap: 5px; 
+    justify-content: center;
 }

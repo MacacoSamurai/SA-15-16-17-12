@@ -8,6 +8,7 @@
     <title>Editar Estoque</title>
 </head>
 <body>
+        <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="home"></button></a>
 
     <div class="base">
         <h1>Editar Peça: {{ peca.nome_peca }}</h1>
@@ -19,19 +20,27 @@
             <h2>Dados da Peça</h2>
 
             <label for="nome">Nome da Peça:</label>
-            <input type="text" id="nome" name="nome_peca" value="{{ peca.nome_peca }}"  required> 
+            <input type="text"  name="nome_peca" value="{{ peca.nome_peca }}"  required> 
 
             <label for="lote">Lote:</label>
-            <input type="text" id="lote" name="lote" value="{{ peca.lote }}"  required>
+            <input type="text"  name="lote" value="{{ peca.lote }}"  required>
  
             <label for="validade">Validade:</label>
-            <input type="text" id="validade" name="validade" value="{{ peca.validade }}"  required>
+            <input type="text"  name="validade" value="{{ peca.validade }}"  required>
 
             <label for="fornecedor">Fornecedor:</label>
-            <input type="text" id="fornecedor" name="fornecedor" value="{{ peca.fornecedor }}"  required>
+            <input type="text"  name="fornecedor" value="{{ peca.fornecedor }}"  required>
 
             <label for="quantidade">Quantidade:</label>
-            <input type="number" id="quantidade" name="quant_peca" value="{{ peca.quant_peca }}"  required>
+            <input type="number"  name="quant_peca" value="{{ peca.quant_peca }}"  required>
+
+            <label for="quantidade">Estoque Minimo:</label>
+            <input type="number"  name="min" value="{{ peca.min }}"  required>
+
+            <label for="quantidade">Estoque Maximo:</label>
+            <input type="number"  name="max" value="{{ peca.max }}"  required>
+
+
 
             <br><br>
             <button type="submit" class="botao">Salvar Alterações</button>
