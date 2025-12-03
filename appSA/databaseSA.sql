@@ -45,7 +45,10 @@ create table estoque (
     lote       int,
     validade   date,
     fornecedor varchar(30),
-    quant_peca int
+    quant_peca int,
+    min        int,
+    max        int
+
 );
 
 insert into funcionarios (nome_func, login_user, senha_user, cargo, cpf) values

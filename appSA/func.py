@@ -92,10 +92,6 @@ def gerente_required(f):
 
 #URL inicial
 @app.route("/")
-def index():
-    # Ação 2: Corrigido o endpoint de redirecionamento para o nome da função
-    return redirect(url_for(f"login"))
-
 
 
 #pagina inicial para a escolha das opções
@@ -154,6 +150,9 @@ def login():
             if conexao and conexao.is_connected():
                 cursor.close()
                 conexao.close()
+
+    if session.get('user_id'):
+        return redirect('/pagi')
 
     return render_template(f"{lg}.html", erro="")  
 
@@ -629,14 +628,16 @@ def cadastro_peca():
         validade = request.form['validade'] 
         fornecedor = request.form['fornecedor']
         quant_peca = request.form['quant_peca']
+        min_peca = request.form['min']
+        max_peca = request.form['max']
         
-        dados_peca = (nome_peca, lote, validade, fornecedor, quant_peca)
+        dados_peca = (nome_peca, lote, validade, fornecedor, quant_peca, min_peca, max_peca)
 
         try:
             conexao = db_connection()
             cursor = conexao.cursor()
             
-            sql_insert = "INSERT INTO estoque (nome_peca, lote, validade, fornecedor, quant_peca) VALUES (%s, %s, %s, %s, %s)" 
+            sql_insert = "INSERT INTO estoque (nome_peca, lote, validade, fornecedor, quant_peca, min, max) VALUES (%s, %s, %s, %s, %s, %s, %s)" 
             cursor.execute(sql_insert, dados_peca)
             
             conexao.commit()
@@ -668,7 +669,7 @@ def listar_estoque():
         cursor = conn.cursor(dictionary=True)
         
         # 2. Query para selecionar todos os itens do estoque
-        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca FROM estoque"
+        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca, min, max FROM estoque"
         cursor.execute(query)
         
         # 3. Armazenar os resultados
@@ -703,19 +704,26 @@ def editar_peca(id_peca_original):
             validade = request.form['validade'] 
             fornecedor = request.form['fornecedor']
             quant_peca = request.form['quant_peca']
+            min_peca = request.form['min']
+            max_peca = request.form['max']
             id_peca = request.form['id_peca_editar'] 
 
-            sql_update = "UPDATE estoque SET nome_peca = %s, lote = %s, validade = %s, fornecedor = %s, quant_peca = %s WHERE id_peca = %s"
-            dados_peca = (nome_peca, lote, validade, fornecedor, quant_peca, id_peca)
+            sql_update = "UPDATE estoque SET nome_peca = %s, lote = %s, validade = %s, fornecedor = %s, quant_peca = %s, min = %s, max = %s WHERE id_peca = %s"
+            dados_peca = (nome_peca, lote, validade, fornecedor, quant_peca, min_peca, max_peca, id_peca)
 
             cursor.execute(sql_update, dados_peca)
             conexao.commit()
+
+            
+            if quant_peca < min_peca or quant_peca > max_peca:
+                return render_template("editar_peca.html", quant_peca = quant_peca, min_peca=min_peca, max_peca=max_peca)
+            
 
             return redirect(f"/listar_estoque") 
 
         else:
             # --- FASE GET: Buscar dados para pré-preencher o formulário ---
-            sql_select = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca FROM estoque WHERE id_peca = %s"
+            sql_select = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca, min, max FROM estoque WHERE id_peca = %s"
             cursor.execute(sql_select, (id_peca_original,))
             peca_data = cursor.fetchone()
         
@@ -728,7 +736,9 @@ def editar_peca(id_peca_original):
                 'lote': peca_data[2],
                 'validade': peca_data[3],
                 'fornecedor': peca_data[4],
-                'quant_peca': peca_data[5]
+                'quant_peca': peca_data[5],
+                'min':peca_data[6],
+                'max':peca_data[7]
             }
             
             return render_template("editar_peca.html", peca=peca) 
@@ -786,6 +796,7 @@ def delete_peca():
 --------Registro de serviços--------
 """
 
+#página para registrar os serviços
 @app.route("/registro_servico", methods=['GET', 'POST'])
 @login_required
 def registro_servico():
@@ -811,7 +822,7 @@ def registro_servico():
             conexao = db_connection()
             cursor = conexao.cursor()
 
-            
+
             sql_cliente_carro = "SELECT id_cliente, placa_carro FROM clientes WHERE cpf = %s"
             cursor.execute(sql_cliente_carro, (cpf_cliente,))
             cliente_data = cursor.fetchone()
@@ -847,4 +858,143 @@ def registro_servico():
 
     # FASE GET: Exibir o formulário
     return render_template("registro_servico.html")
+
+
+
+#pagina para listar os registros
+@app.route("/listar_registro_servico")
+@login_required
+def listar_registro_servico():
+    conn = None
+    registros = []
+    try:
+        # 1. Estabelecer conexão com o DB
+        conn = db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # 2. Query para selecionar todos os itens do estoque
+        query = "SELECT id_reg, diagnostico, pecas_subs, func_id, prazo, realizacao, cliente, placa FROM registro_servico"
+        cursor.execute(query)
+        
+        # 3. Armazenar os resultados
+        registros = cursor.fetchall()
+        
+    except mysql.connector.Error as err:
+        print(f"Erro ao listar os registros: {err}")
+        return render_template(f"{pi}.html", erro="Erro ao carregar os registros.")
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+    # 4. Redirecionar para uma nova página de visualização do estoque (que precisa ser criada)
+    return render_template(f"listar_registro_servico.html", registros=registros)
+
+
+
+#pagina para editar os registros
+@app.route("/editar_registro_servico/<int:id_reg_original>", methods=['GET', 'POST'])
+@login_required
+def editar_registro_servico(id_reg_original):
+    conexao = None
     
+    try:
+        conexao = db_connection()
+        cursor = conexao.cursor()
+
+        if request.method == 'POST':
+            diagnostico = request.form['diagnostico']
+            pecas_subs  = request.form['pecas_subs']
+            func_id     = session.get('user_id') 
+            prazo       = request.form['prazo'] # Recebido como string (e.g., 'YYYY-MM-DD HH:MM:SS')
+            realizacao  = request.form['realizacao']
+            cpf_cliente = request.form['cpf_cliente']
+            id_reg = request.form['id_reg_editar'] 
+
+            sql_cliente_carro = "SELECT id_cliente, placa_carro FROM clientes WHERE cpf = %s"
+            cursor.execute(sql_cliente_carro, (cpf_cliente,))
+            cliente_data = cursor.fetchone()
+
+            if not cliente_data:
+                 return render_template("registro_servico.html", erro="Cliente com este CPF não encontrado!")
+
+            cliente_id = cliente_data[0]
+            placa_carro = cliente_data[1]
+
+
+            sql_update = "UPDATE estoque SET nome_peca = %s, lote = %s, validade = %s, fornecedor = %s, quant_peca = %s, min = %s, max = %s WHERE id_peca = %s"
+            dados_reg = (diagnostico, pecas_subs, func_id, prazo, realizacao, cliente_id, placa_carro, id_reg)
+
+            cursor.execute(sql_update, dados_reg)
+            conexao.commit()
+
+            return redirect(f"/listar_registro_servico") 
+
+        else:
+            # --- FASE GET: Buscar dados para pré-preencher o formulário ---
+            sql_select = "SELECT id_reg, diagnostico, pecas_subs, func_id, prazo, realizacao, cliente, placa FROM registro_servico WHERE id_reg = %s"
+            cursor.execute(sql_select, (id_reg_original,))
+            reg_data = cursor.fetchone()
+        
+            if reg_data is None:
+                return render_template(f"{pi}.html", erro=f"Registro com ID {id_reg_original} não encontrada.")
+
+            registro = {
+                'id_reg': reg_data[0],
+                'diagnostico': reg_data[1],
+                'pecas_subs': reg_data[2],
+                'func_id': reg_data[3],
+                'realizacao': reg_data[4],
+                'cliente': reg_data[5],
+                'placa':reg_data[6]
+            }
+            
+            return render_template("editar_registro_servico.html", registro=registro) 
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao editar registro: {err}")
+        if conexao:
+            conexao.rollback()
+        return render_template(f"{pi}.html", erro=f"Erro no banco de dados: Não foi possível editar os registros.") 
+    
+    finally:
+        if conexao and conexao.is_connected():
+            cursor.close()
+            conexao.close()
+
+
+
+#pagina para deletaqr os registros
+@app.route("/delete_registro_servico", methods=['POST'])
+@login_required
+def delete_registro_servico():
+    conexao = None
+    id_deletar = request.form.get('id_deletar')    
+
+    if not id_deletar:
+        return render_template(f"{pi}.html", erro="ID do registro para deleção não fornecido.")
+
+    try:
+        conexao = db_connection()
+        cursor = conexao.cursor()
+
+        sql_delete = "DELETE FROM registro_servico WHERE id_reg = %s"
+        cursor.execute(sql_delete, (id_deletar,))
+        
+        conexao.commit()
+        
+        if cursor.rowcount > 0:
+            return redirect(f"/listar_registro_servico") 
+        else:
+            return render_template(f"{pi}.html", erro="Registro não encontrado ou deleção falhou.")
+
+    except mysql.connector.Error as err:
+        print(f"Erro ao deletar registro: {err}")
+        conexao.rollback()
+        return render_template(f"{pi}.html", erro=f"Erro no banco de dados: Não foi possível deletar o registro, verifique se há registros associados.") 
+    
+    finally:
+        if conexao and conexao.is_connected():
+            cursor.close()
+            conexao.close()
+
