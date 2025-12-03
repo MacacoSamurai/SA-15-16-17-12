@@ -669,7 +669,7 @@ def listar_estoque():
         cursor = conn.cursor(dictionary=True)
         
         # 2. Query para selecionar todos os itens do estoque
-        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca, min, max FROM estoque"
+        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca, FROM estoque"
         cursor.execute(query)
         
         # 3. Armazenar os resultados
@@ -922,7 +922,7 @@ def editar_registro_servico(id_reg_original):
             placa_carro = cliente_data[1]
 
 
-            sql_update = "UPDATE estoque SET nome_peca = %s, lote = %s, validade = %s, fornecedor = %s, quant_peca = %s, min = %s, max = %s WHERE id_peca = %s"
+            sql_update = "UPDATE registro_servico SET diagnostico = %s, pecas_subs = %s, func_id = %s, prazo = %s, realizacao = %s, cliente = %s, placa = %s WHERE id_reg = %s"
             dados_reg = (diagnostico, pecas_subs, func_id, prazo, realizacao, cliente_id, placa_carro, id_reg)
 
             cursor.execute(sql_update, dados_reg)
