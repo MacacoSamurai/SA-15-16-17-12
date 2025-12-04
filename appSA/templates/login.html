@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login do usuario</title>
+    <title>Acesso ao Sistema</title>
     <link rel="stylesheet" href="/static/css/login.css">
-    <link rel="stylesheet" href="login.css">
-    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
-            
-
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
 </head>
 
 <body>
@@ -16,26 +13,27 @@
     <div class="base">
 
         <h1 class="txt">LOGIN</h1>
+        
         {% if erro %}
-            <p style="color: red; text-align: center;">{{ erro }}</p>
+            <div class="msg-erro">{{ erro }}</div>
         {% endif %}
 
         <form action="/login" method="POST">
 
-            <h2 class="us">Digite seu Usuário</h2>
-            <input type="text" id="login_user" name="usuario" class="campo" required placeholder="Usuario">
+            <div>
+                <label for="login_user">Usuário</label>
+                <input type="text" id="login_user" name="usuario" class="campo" required placeholder="Digite seu usuário">
+            </div>
 
+            <div>
+                <label for="senha_user">Senha</label>
+                <input type="password" id="senha_user" name="senha" class="campo" required placeholder="Digite sua senha">
+            </div>
 
-            <h2 class="se">Digite sua Senha</h2>
-            <input type="password" id="senha_user" name="senha" class="campo" required placeholder="Senha"><br><br>
-
-            <button type="submit" class="botao" >Enviar</button>
+            <button type="submit" class="botao">Entrar</button>
                
         </form>
     </div>
 
-
-
 </body>
-
 </html>

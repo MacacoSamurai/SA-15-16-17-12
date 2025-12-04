@@ -4,33 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/pagi.css">            <!--CONECTA COM O CSS PARA EMBELEZAR A WEB-->
-    <link rel="stylesheet" href="pagi.css">            <!--CONECTA COM O CSS PARA EMBELEZAR A WEB (TESTES)-->
-    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png">  <!--CONECTA O ICONE-->
-
-    <title>Pagina inicial</title>
-
+    <link rel="stylesheet" href="/static/css/pagi.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png">
+    <title>Menu Principal</title>
 </head>
 
-
 <body>
-    <a href="/logout"><button class="logout"><img src="\static\imagens\logout.png" class="home"></button>       </a>
 
-    <div class="base">
-        <a href="cadastro_cliente">    <button class="C_CL">Cadastrar Cliente</button>        </a>
-        <a href="listar_clientes">     <button class="L_CL">Clientes</button>                 </a> <!--DEF cargos LIMIT 5-->
-        <a href="cadastro_peca">       <button class="C_PE">Cadastro Peça</button>            </a>
-        <a href="listar_estoque">      <button class="L_ES">Estoque</button>                  </a>
-        <a href="cadastro_func">       <button class="C_FU">Cadastro Funcionario</button>     </a> <!--DEF cargos-->
-        <a href="pagi">                <button class="L_FU">Lista de Funcionarios</button>    </a> <!--DEF cargos-->
+    <a href="/logout" class="logout-container" title="Sair do Sistema">
+        <img src="/static/imagens/logout.png" alt="Sair" class="img">
+    </a>
+
+    <div style="display: flex; flex-direction: column; align-items: center;">
         
+        <div class="base">
+            <h2>Painel de Controle</h2>
+
+            <a href="listar_clientes" style="width: 100%;">
+                <button class="botao-lista">Clientes</button>
+            </a>
+            
+            <a href="listar_estoque" style="width: 100%;">
+                <button class="botao-lista">Estoque</button>
+            </a>
+            
+            <a href="listar_func" style="width: 100%;">
+                <button class="botao-lista">Funcionários</button>
+            </a> 
+        </div>
+
+        <a href="pagi" class="servico-link">
+            <button class="botao-destaque">Registro Serviços</button>
+        </a>
+
     </div>
-        <a href="pagi">                <button class="R_SE"><h3>Registro Serviços</h3></button>        </a>
-
-
-
-
 
 </body>
-
 </html>

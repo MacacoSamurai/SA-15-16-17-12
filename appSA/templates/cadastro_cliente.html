@@ -5,38 +5,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/cadastro_cliente.css"> 
-    <link rel="stylesheet" href="cadastro_cliente.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
-    <title>Cadastro De Cliente e Veículo</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
+    <title>Cadastro de Cliente e Veículo</title>
 </head>
 
 <body>
-    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="home"></button></a>
+
+    <a href="pagi" class="btn-home-fora" title="Ir para Início">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
+
     <div class="base">
-        <h1>Cadastro de Cliente e Veículo:</h1>
+        
+        <div class="cabecalho-form">
+            <a href="listar_clientes" class="btn-voltar-mini" title="Voltar para Lista">
+                <img src="/static/imagens/voltar.png" alt="Voltar">
+            </a>
+            <h1>Novo Cadastro</h1>
+        </div>
 
         <form action="cadastro_cliente" method="POST"> 
-            <div class="grp1">
-            <h2>Dados do Cliente</h2>
+            
+            <div class="container-inputs">
+                
+                <div class="grupo-dados">
+                    <h2>Dados do Cliente</h2>
+                    
+                    <div class="input-box">
+                        <input type="text" id="nome" name="nome_cliente" placeholder="Nome Completo" required>
+                    </div>
 
-            <input type="text" id="nome" name="nome_cliente" placeholder="Nome:" required> <br>
+                    <div class="input-box">
+                        <input type="text" id="cpf" name="cpf_cliente" placeholder="CPF (apenas números)" required>
+                    </div>
 
-            <input type="text" id="cpf" name="cpf_cliente" placeholder="CPF:" required> <br>
+                    <div class="input-box">
+                        <input type="text" id="celular" name="celular_cliente" placeholder="Celular / WhatsApp" required>
+                    </div>
+                </div>
 
-            <input type="text" id="celular" name="celular_cliente" placeholder="Celular:" required>
+                <div class="grupo-dados">
+                    <h2>Dados do Veículo</h2>
+
+                    <div class="input-box">
+                        <input type="text" id="placa" name="placa_carro" placeholder="Placa do Veículo" required>
+                    </div>
+
+                    <div class="input-box">
+                        <input type="text" id="modelo" name="modelo_carro" placeholder="Modelo (Ex: Gol, Civic)" required>
+                    </div>
+
+                    <div class="input-box">
+                        <input type="text" id="fabricante" name="fabricante_carro" placeholder="Fabricante (Ex: VW, Honda)" required>
+                    </div>
+                </div>
+
             </div>
-            <div class="grp2">
-            <h2>Dados do Veículo</h2>
 
-            <input type="text" id="placa" name="placa_carro" placeholder="Placa:" required> <br>
-
-            <input type="text" id="modelo" name="modelo_carro" placeholder="Modelo:" required> <br>
-
-            <input type="text" id="fabricante" name="fabricante_carro" placeholder="Marca" required>
-            </div>
-<br>
-            <button type="submit" class="botao">Cadastrar</button>
+            <button type="submit" class="botao-cadastrar">Cadastrar</button>
         </form>
+
     </div>
+
 </body>
 </html>

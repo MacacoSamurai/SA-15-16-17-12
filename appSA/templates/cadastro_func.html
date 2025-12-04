@@ -9,44 +9,70 @@
 </head>
 
 <body>
-    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="home"></button></a>
+
+    <a href="pagi" class="btn-home-fora" title="Ir para Início">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
+
     <div class="base">
-        <h1 class="txt">NOVO FUNCIONÁRIO</h1>
+        
+        <div class="cabecalho-form">
+            <a href="listar_func" class="btn-voltar-mini" title="Voltar">
+                <img src="/static/imagens/voltar.png" alt="Voltar">
+            </a>
+            <h1>Novo Funcionário</h1>
+        </div>
 
         {% if erro %}
-            <p style="color: red; text-align: center;">{{ erro }}</p>
+            <p style="color: #e74c3c; text-align: center;">{{ erro }}</p>
         {% endif %}
         {% if sucesso %}
-            <p style="color: lightgreen; text-align: center;">{{ sucesso }}</p>
+            <p style="color: #2ecc71; text-align: center;">{{ sucesso }}</p>
         {% endif %}
 
         <form action="/cadastro_func" method="POST">
 
-            <h2 class="us">Nome Completo</h2>
-            <input type="text" name="nome_func" class="campo" required placeholder="Nome do Funcionário">
+            <div class="container-inputs">
+                
+                <div class="grupo-dados">
+                    <h2>Dados Pessoais</h2>
+                    
+                    <div class="input-box">
+                        <input type="text" name="nome_func" placeholder="Nome Completo" required>
+                    </div>
 
-            <h2 class="us">CPF</h2>
-            <input type="text" name="cpf" class="campo" required placeholder="Digite o CPF">
+                    <div class="input-box">
+                        <input type="text" name="cpf" placeholder="CPF (apenas números)" required>
+                    </div>
 
-            <h2 class="us">Cargo</h2>
-            <select name="cargo" id="cargo" class="campo" required>
-                <option value="" disabled selected>Selecione...</option>
-                <option value="funcionario">Funcionário</option>
-                <option value="gerente">Gerente</option>
-            </select>
+                    <div class="input-box">
+                        <select name="cargo" required>
+                            <option value="" disabled selected>Selecione o Cargo...</option>
+                            <option value="funcionario">Funcionário</option>
+                            <option value="gerente">Gerente</option>
+                        </select>
+                    </div>
+                </div>
 
-            <h2 class="us">Usuário de Login</h2>
-            <input type="text" name="login_user" class="campo" required placeholder="Usuário para entrar no sistema">
+                <div class="grupo-dados">
+                    <h2>Dados de Acesso</h2>
 
-            <h2 class="se">Senha</h2>
-            <input type="password" name="senha_user" class="campo" required placeholder="Senha de acesso">
+                    <div class="input-box">
+                        <input type="text" name="login_user" placeholder="Usuário de Login" required>
+                    </div>
 
-            <br><br>
-            <button type="submit" class="botao">CADASTRAR</button>
+                    <div class="input-box">
+                        <input type="password" name="senha_user" placeholder="Senha de Acesso" required>
+                    </div>
+                </div>
 
-            <br><br>
-            <a href="/login" style="color: white; text-decoration: none; display: block; text-align: center;">Voltar para Login</a>
+            </div>
+
+            <button type="submit" class="botao-cadastrar">CADASTRAR</button>
+
         </form>
+
     </div>
+
 </body>
-</html> 
+</html>

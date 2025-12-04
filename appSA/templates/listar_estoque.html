@@ -4,76 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/listarestoque.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
-
-
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
     <title>Lista de Estoque</title>
-
 </head>
 
-
 <body>
-    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="imgH"></button></a>
-    <h1>📦 Estoque de Peças</h1>
-    <a href="cadastro_peca" class="mais"><button class="mais"><img src="\static\imagens\mais.png" class="imgM"></button></a>
-    {% if erro %}
-        <p class="erro">Erro: {{ erro }}</p>
-    {% endif %}
 
-    {% if pecas %}
+    <a href="pagi" class="btn-home-fora">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
 
-        <table>
-            <thead class="legenda">
-                <tr>    
-                    <th>Identificador</th>
-                    <th>Nome da Peça</th>
-                    <th>Lote</th>
-                    <th>Validade</th>
-                    <th>Fornecedor</th>
-                    <th>Quantidade</th>
-                    <th>Opções</th>
-                </tr>
-            </thead>
+    <div class="base">
+        
+        <div class="cabecalho-lista">
+            <h1>📦 Estoque de Peças</h1>
+            <a href="cadastro_peca" class="botao-mais" title="Adicionar Nova Peça">
+                <img src="/static/imagens/mais.png" alt="Adicionar">
+            </a>
+        </div>
 
-            <tbody>
-                {% for peca in pecas %}
-                <tr>
-                    <td>{{ peca.id_peca }}</td>
-                    <td>{{ peca.nome_peca }}</td>
-                    <td>{{ peca.lote }}</td>
-                    <td>{{ peca.validade }}</td>
-                    <td>{{ peca.fornecedor }}</td>
-                    <td>{{ peca.quant_peca }}</td>
-                    <td class="opcao">
-    
-                        <a href="/editar_peca/{{ peca.id_peca }}">
-                            <button  class="editar" >
-                                ✏️
-                            </button>
-                        </a>
-                    
-                        <form action="/delete_peca" method="POST" style="margin: 0;">
-                            <input type="hidden" name="id_deletar" value="{{ peca.id_peca }}">
+        {% if erro %}
+            <p class="erro">Erro: {{ erro }}</p>
+        {% endif %}
+
+        {% if pecas %}
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>    
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Lote</th>
+                            <th>Validade</th>
+                            <th>Fornecedor</th>
+                            <th>Qtd.</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for peca in pecas %}
+                        <tr>
+                            <td>{{ peca.id_peca }}</td>
+                            <td>{{ peca.nome_peca }}</td>
+                            <td>{{ peca.lote }}</td>
+                            <td>{{ peca.validade }}</td>
+                            <td>{{ peca.fornecedor }}</td>
+                            <td>{{ peca.quant_peca }}</td>
+                            <td class="opcao">
+            
+                                <a href="/editar_peca/{{ peca.id_peca }}" class="btn-acao btn-editar">
+                                    ✏️
+                                </a>
                             
-                            <button type="submit" onclick="return confirm('Tem certeza que quer apagar esta peça?')"  class="delete">
-                                🗑️
-                            </button>
-                        </form>
-                    
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                                <form action="/delete_peca" method="POST" style="margin: 0; display:inline;">
+                                    <input type="hidden" name="id_deletar" value="{{ peca.id_peca }}">
+                                    <button type="submit" onclick="return confirm('Tem certeza que quer apagar esta peça?')" class="btn-acao btn-delete">
+                                        🗑️
+                                    </button>
+                                </form>
+                            
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="aviso-vazio">Nenhuma peça encontrada no estoque.</p>
+        {% endif %}
 
-        </table>
-
-
-
-
-
-    {% else %}
-        <p>Nenhuma peça encontrada no estoque ou o estoque está vazio.</p>
-    {% endif %}
+    </div>
 
 </body>
 </html>

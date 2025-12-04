@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/listarestoque.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
+
+    <title>Lista de Funcionários</title>
+</head>
+
+<body>
+    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="imgH"></button></a>
+    
+    <h1>👥 Equipe de Funcionários</h1>
+    
+    <a href="cadastro_func" class="mais"><button class="mais"><img src="\static\imagens\mais.png" class="imgM"></button></a>
+    
+    {% if erro %}
+        <p class="erro">Erro: {{ erro }}</p>
+    {% endif %}
+
+    {% if funcionarios %}
+
+        <table>
+            <thead class="legenda">
+                <tr>    
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Login</th>
+                    <th>Cargo</th>
+                    <th>CPF</th>
+                    <th>Opções</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for funcionario in funcionarios %}
+                <tr>
+                    <td>{{ funcionario.id_func }}</td>
+                    <td>{{ funcionario.nome_func }}</td>
+                    <td>{{ funcionario.login_user }}</td>
+                    <td>{{ funcionario.cargo }}</td>
+                    <td>{{ funcionario.cpf }}</td>
+                    <td class="opcao">
+    
+                        <a href="/editar_func/{{ funcionario.id_func }}">
+                            <button class="editar">
+                                ✏️
+                            </button>
+                        </a>
+                    
+                        <form action="/delete_funcionario" method="POST" style="margin: 0;">
+                            <input type="hidden" name="id_deletar" value="{{ funcionario.id_func }}">
+                            
+                            <button type="submit" onclick="return confirm('Tem certeza que quer remover este funcionário?')" class="delete">
+                                🗑️
+                            </button>
+                        </form>
+                    
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    {% else %}
+        <p>Nenhum funcionário cadastrado.</p>
+    {% endif %}
+
+</body>
+</html>
