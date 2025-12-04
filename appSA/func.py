@@ -262,7 +262,7 @@ def editar_cliente(cpf_original):
             placa_original = placa_original_data[0]
 
         
-            sql_update_cliente = "UPDATE clientes set nome = %s, cpf = %s, celular = %s, placa_carro = %s WHERE cpf_original = %s"
+            sql_update_cliente = "UPDATE clientes SET nome = %s, cpf = %s, celular = %s, placa_carro = %s WHERE cpf_original = %s"
             dados_clientes = (nome, cpf_novo, celular, placa_carro_nova, cpf_original)
             cursor.execute(sql_update_cliente, dados_clientes,)
         
@@ -703,9 +703,9 @@ def editar_peca(id_peca_original):
             lote = request.form['lote']        
             validade = request.form['validade'] 
             fornecedor = request.form['fornecedor']
-            quant_peca = request.form['quant_peca']
-            min_peca = request.form['min']
-            max_peca = request.form['max']
+            quant_peca = int(request.form['quant_peca'])
+            min_peca = int(request.form['min'])
+            max_peca = int(request.form['max'])
             id_peca = request.form['id_peca_editar'] 
 
             sql_update = "UPDATE estoque SET nome_peca = %s, lote = %s, validade = %s, fornecedor = %s, quant_peca = %s, min = %s, max = %s WHERE id_peca = %s"
