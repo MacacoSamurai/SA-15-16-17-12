@@ -669,7 +669,7 @@ def listar_estoque():
         cursor = conn.cursor(dictionary=True)
         
         # 2. Query para selecionar todos os itens do estoque
-        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca, FROM estoque"
+        query = "SELECT id_peca, nome_peca, lote, validade, fornecedor, quant_peca FROM estoque"
         cursor.execute(query)
         
         # 3. Armazenar os resultados
