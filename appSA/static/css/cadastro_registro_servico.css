@@ -202,31 +202,28 @@ input:focus, select:focus, textarea:focus {
 }
 .btn-add-peca:hover { background-color: rgba(46,204,113,0.1); }
 
-/* =========================================
-   SEÇÃO DE VALORES (EM BAIXO E VERTICAL)
-   ========================================= */
-/*
-   Esta classe está dentro da div .full-width.
-   Definimos como FLEX COLUMN para que os inputs fiquem empilhados (igual cadastro_peca).
-*/
 .valores-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 Colunas Iguais */
     gap: 15px;
     width: 100%;
+    margin-top: 5px;
 }
 
-/* Para garantir que cada bloco de input ocupe 100% da largura */
-.valores-grid .input-box {
-    width: 100%;
+/* Responsividade: Em telas pequenas, volta a ser um embaixo do outro */
+@media (max-width: 600px) {
+    .valores-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* Input de Total (Destaque) */
+/* Destaque visual para o Total */
 input[name="valor_total"] {
-    background-color: #1a1a1a;
-    border-color: #27ae60;
-    color: #2ecc71;
+    background-color: #151515; /* Fundo mais escuro */
+    border: 1px solid #27ae60; /* Borda Verde */
+    color: #2ecc71; /* Texto Verde Neon */
     font-weight: bold;
+    font-size: 1.1em;
 }
 
 /* =========================================
