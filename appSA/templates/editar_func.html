@@ -3,44 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/listarestoque.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
+    <link rel="stylesheet" href="/static/css/editar_func.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
     <title>Editar Funcionário</title>
 </head>
+
 <body>
-    <a href="/pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="home"></button></a>
+
+    <a href="/pagi" class="btn-home-fora" title="Ir para Início">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
 
     <div class="base">
         
-        <h1>Editar Funcionário: {{ funcionario.nome_func }}</h1>
+        <div class="cabecalho-form">
+            <a href="/listar_func" class="btn-voltar-mini" title="Voltar para Lista">
+                <img src="/static/imagens/voltar.png" alt="Voltar">
+            </a>
+            <h1>Editar Funcionário</h1>
+        </div>
 
         <form action="/editar_func/{{ funcionario.id_func }}" method="POST"> 
             
             <input type="hidden" name="id_func_editar" value="{{ funcionario.id_func }}">
 
-            <h2>Dados do Funcionário</h2>
+            <div class="container-inputs">
+                
+                <div class="grupo-dados">
+                    <h2>Dados Pessoais</h2>
+                    
+                    <div class="input-box">
+                        <label>Nome Completo</label>
+                        <input type="text" name="nome_func" value="{{ funcionario.nome_func }}" required>
+                    </div>
 
-            <label for="nome_func">Nome Completo:</label>
-            <input type="text" name="nome_func" value="{{ funcionario.nome_func }}" required> 
+                    <div class="input-box">
+                        <label>CPF</label>
+                        <input type="text" name="cpf" value="{{ funcionario.cpf }}" required>
+                    </div>
 
-            <label for="cpf">CPF:</label>
-            <input type="text" name="cpf" value="{{ funcionario.cpf }}" required>
- 
-            <label for="cargo">Cargo:</label>
-            <input type="text" name="cargo" value="{{ funcionario.cargo }}" required>
+                    <div class="input-box">
+                        <label>Cargo</label>
+                        <input type="text" name="cargo" value="{{ funcionario.cargo }}" required>
+                    </div>
+                </div>
 
-            <label for="login_user">Login de Usuário:</label>
-            <input type="text" name="login_user" value="{{ funcionario.login_user }}" required>
+                <div class="grupo-dados">
+                    <h2>Acesso ao Sistema</h2>
 
-            <label for="senha_user">Nova Senha:</label>
-            <input type="password" name="senha_user" placeholder="Deixe em branco para manter a atual">
+                    <div class="input-box">
+                        <label>Login de Usuário</label>
+                        <input type="text" name="login_user" value="{{ funcionario.login_user }}" required>
+                    </div>
 
-            <br><br>
-            <button type="submit" class="botao">Salvar Alterações</button>
+                    <div class="input-box">
+                        <label>Nova Senha</label>
+                        <input type="password" name="senha_user" placeholder="Deixe em branco para manter a atual">
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="botao-salvar">Salvar Alterações</button>
             
-            <br><br>
-            <a href="/listar_func" style="color:white; display:block; text-align:center; text-decoration:none;">Cancelar</a>
         </form>
+
     </div>
 
 </body>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/listarestoque.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
+    <title>Lista de Serviços</title>
+</head>
+
+<body>
+
+    <a href="pagi" class="btn-home-fora">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
+
+    <div class="base">
+        
+        <div class="cabecalho-lista">
+            <h1>📋 Registros de Serviços</h1>
+
+            <a href="cadastro_registro_servico" class="botao-mais" >
+                <img src="/static/imagens/mais.png" alt="Adicionar">
+            </a>
+        </div>
+
+        {% if erro %}
+            <p class="erro">Erro: {{ erro }}</p>
+        {% endif %}
+
+        {% if registros %}
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>    
+                            <th>ID</th>
+                            <th>Placa</th>
+                            <th>Diagnóstico</th>
+                            <th>Peças</th>
+                            <th>Prazo</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for registro in registros %}
+                        <tr>
+                            <td>{{ registro.id_reg }}</td>
+                            <td>{{ registro.placa }} <br><small>(Cli: {{ registro.cliente }})</small></td>
+                            
+                            <td title="{{ registro.diagnostico }}">
+                                {{ registro.diagnostico[:40] }}{% if registro.diagnostico|length > 40 %}...{% endif %}
+                            </td>
+                            
+                            <td>{{ registro.pecas_subs }}</td>
+                            
+                            <td>{{ registro.prazo }}</td>
+                            
+                            <td class="opcao">
+            
+                                <a href="/editar_registro_servico/{{ registro.id_reg }}" class="btn-acao btn-editar" title="Editar">
+                                    ✏️
+                                </a>
+                            
+                                <form action="/delete_registro_servico" method="POST" style="margin: 0; display:inline;">
+                                    <input type="hidden" name="id_deletar" value="{{ registro.id_reg }}">
+                                    <button type="submit" onclick="return confirm('Tem certeza que quer apagar este registro?')" class="btn-acao btn-delete" title="Deletar">
+                                        🗑️
+                                    </button>
+                                </form>
+                            
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="aviso-vazio">Nenhum registro de serviço encontrado.</p>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

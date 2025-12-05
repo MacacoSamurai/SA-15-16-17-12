@@ -3,71 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/listarestoque.css"> 
-    <link rel="shortcut icon" type="image/x-icon" href="\static\imagens\icone.png"> 
-
+    
+    <link rel="stylesheet" href="/static/css/listar_func.css"> 
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png"> 
+    
     <title>Lista de Funcionários</title>
 </head>
 
 <body>
-    <a href="pagi" class="pagi"><button class="pagi"><img src="\static\imagens\home.png" class="imgH"></button></a>
     
-    <h1>👥 Equipe de Funcionários</h1>
+    <a href="pagi" class="btn-home-fora" title="Voltar ao Menu">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
     
-    <a href="cadastro_func" class="mais"><button class="mais"><img src="\static\imagens\mais.png" class="imgM"></button></a>
-    
-    {% if erro %}
-        <p class="erro">Erro: {{ erro }}</p>
-    {% endif %}
+    <div class="container-lista">
+        
+        <div class="cabecalho">
+            <h1>👥 Funcionários</h1>
+            <a href="cadastro_func" class="botao-mais" title="Novo Funcionário">
+                <img src="/static/imagens/mais.png" alt="Adicionar">
+            </a>
+        </div>
+        
+        {% if erro %}
+            <p class="msg-erro">Erro: {{ erro }}</p>
+        {% endif %}
 
-    {% if funcionarios %}
+        {% if funcionarios %}
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>    
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Login</th>
+                            <th>Cargo</th>
+                            <th>CPF</th>
+                            <th style="text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
 
-        <table>
-            <thead class="legenda">
-                <tr>    
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Login</th>
-                    <th>Cargo</th>
-                    <th>CPF</th>
-                    <th>Opções</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for funcionario in funcionarios %}
-                <tr>
-                    <td>{{ funcionario.id_func }}</td>
-                    <td>{{ funcionario.nome_func }}</td>
-                    <td>{{ funcionario.login_user }}</td>
-                    <td>{{ funcionario.cargo }}</td>
-                    <td>{{ funcionario.cpf }}</td>
-                    <td class="opcao">
-    
-                        <a href="/editar_func/{{ funcionario.id_func }}">
-                            <button class="editar">
-                                ✏️
-                            </button>
-                        </a>
-                    
-                        <form action="/delete_funcionario" method="POST" style="margin: 0;">
-                            <input type="hidden" name="id_deletar" value="{{ funcionario.id_func }}">
+                    <tbody>
+                        {% for funcionario in funcionarios %}
+                        <tr>
+                            <td>{{ funcionario.id_func }}</td>
+                            <td>{{ funcionario.nome_func }}</td>
+                            <td>{{ funcionario.login_user }}</td>
+                            <td>{{ funcionario.cargo }}</td>
+                            <td>{{ funcionario.cpf }}</td>
                             
-                            <button type="submit" onclick="return confirm('Tem certeza que quer remover este funcionário?')" class="delete">
-                                🗑️
-                            </button>
-                        </form>
-                    
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                            <td class="celula-acoes">
+                                <a href="/editar_func/{{ funcionario.id_func }}" class="btn-acao" title="Editar">
+                                    ✏️
+                                </a>
+                            
+                                <form action="/delete_funcionario" method="POST" style="margin: 0; display:inline;">
+                                    <input type="hidden" name="id_deletar" value="{{ funcionario.id_func }}">
+                                    <button type="submit" onclick="return confirm('Tem a certeza que deseja eliminar este funcionário?')" class="btn-acao" title="Excluir">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-        </table>
+        {% else %}
+            <p class="aviso-vazio">Nenhum funcionário encontrado no sistema.</p>
+        {% endif %}
 
-    {% else %}
-        <p>Nenhum funcionário cadastrado.</p>
-    {% endif %}
+    </div>
 
 </body>
 </html>

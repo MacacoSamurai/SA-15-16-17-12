@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/cadastro_registro_servico.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png">
+    <title>Novo Serviço</title>
+</head>
+
+<body>
+
+    <a href="pagi" class="btn-home-fora" title="Ir para Início">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
+    
+    <div class="base">
+        
+        <div class="cabecalho-form">
+            <a href="listar_registro_servico" class="btn-voltar-mini" title="Voltar">
+                <img src="/static/imagens/voltar.png" alt="Voltar">
+            </a>
+            <h1>Novo Serviço</h1>
+        </div>
+
+        {% if erro %}
+            <p style="color: #e74c3c; text-align: center; font-weight: bold;">{{ erro }}</p>
+        {% endif %}
+
+        <form action="/cadastro_registro_servico" method="POST">
+            
+            <div class="container-inputs">
+                
+                <div class="grupo-dados">
+                    <h2>Informações do Veículo</h2>
+                    
+                    <div class="input-box">
+                        <label>Placa do Carro</label>
+                        <input type="text" name="placa_carro" placeholder="ABC-1234" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label>Funcionário Responsável</label>
+                        <input name="funcionario_id" placeholder="Ex: João jonas" required></input>
+
+                    </div>
+                </div>
+
+                <div class="grupo-dados">
+                    <h2>Detalhes do Serviço</h2>
+                    
+                    <div class="input-box">
+                        <label>Serviço Realizado</label>
+                        <input type="text" name="servico_realizado" placeholder="Ex: Troca de Óleo" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label>Data</label>
+                        <input type="date" name="data_servico">
+                    </div>
+                </div>
+
+                <div class="grupo-dados full-width">
+                    <label>Descrição Detalhada / Observações</label>
+                    <textarea name="descricao" rows="3" placeholder="Detalhes técnicos adicionais..."></textarea>
+                </div>
+
+                <div class="grupo-dados full-width">
+                    <h2>Peças Utilizadas</h2>
+                    
+                    <div class="area-pecas">
+                        <div id="pecas-container">
+                            <div class="peca-input-group">
+                                <select name="peca_id[]" style="flex: 2;">
+                                    <option value="" disabled selected>Selecione a Peça...</option>
+                                    {% for peca in pecas %}
+                                        <option value="{{ peca.id_peca }}">{{ peca.nome_peca }} (Estoque: {{ peca.quant_peca }})</option>
+                                    {% endfor %}
+                                </select>
+                                
+                                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;">
+                                
+                                <button type="button" class="btn-remove" onclick="this.parentNode.remove()" style="opacity: 0.5; cursor: not-allowed;" disabled>X</button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-add-peca" onclick="addPeca()">+ Adicionar Outra Peça</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="botao-salvar">SALVAR REGISTRO</button>
+        </form>
+    </div>
+
+    <script>
+        function addPeca() {
+            const container = document.getElementById('pecas-container');
+            const newGroup = document.createElement('div');
+            newGroup.className = 'peca-input-group'; // Usa a classe CSS que criamos
+            
+            // Recria o HTML do select usando a lista que o Jinja2 gerou no primeiro select
+            // Dica: Pegamos o HTML interno do primeiro select para copiar as opções
+            const firstSelect = document.querySelector('select[name="peca_id[]"]');
+            const optionsHTML = firstSelect.innerHTML;
+            
+            newGroup.innerHTML = `
+                <select name="peca_id[]" style="flex: 2;" required>
+                    ${optionsHTML}
+                </select>
+                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" required style="width: 80px;">
+                <button type="button" class="btn-remove" onclick="this.parentNode.remove()">X</button>
+            `;
+            
+            container.appendChild(newGroup);
+        }
+    </script>
+<div class="grupo-dados full-width">
+    <h2>Valores</h2>
+    <div class="container-inputs valores-grid">
+        
+        <div class="input-box">
+            <label>Valor Peças (R$)</label>
+            <input type="number" step="0.01" name="valor_pecas" placeholder="0.00">
+        </div>
+
+        <div class="input-box">
+            <label>Valor Mão de Obra (R$)</label>
+            <input type="number" step="0.01" name="valor_mao_obra" placeholder="0.00">
+        </div>
+
+        <div class="input-box">
+            <label>Valor Total (R$)</label>
+            <input type="number" step="0.01" name="valor_total" placeholder="Calculado auto" readonly>
+        </div>
+
+    </div>
+</div>
+</form>
+
+
+</body>
+</html>
