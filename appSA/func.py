@@ -410,7 +410,7 @@ def delete_cliente():
         
         # Verifica se alguma linha foi afetada para confirmar a exclusão
         if cursor.rowcount > 0:
-            return redirect(f"/{pi}") # Redireciona para a página inicial
+            return redirect(f"/listar_clientes") # Redireciona para a página inicial
         else:
             return render_template(f"{pi}.html", erro="Carro/Cliente não encontrado ou deleção falhou.")
 
@@ -699,25 +699,40 @@ def editar_peca(id_peca_original):
         cursor = conexao.cursor()
 
         if request.method == 'POST':
-            nome_peca = request.form['nome_peca']     
-            lote = request.form['lote']        
-            validade = request.form['validade'] 
-            fornecedor = request.form['fornecedor']
-            quant_peca = int(request.form['quant_peca'])
-            min_peca = int(request.form['min'])
-            max_peca = int(request.form['max'])
-            id_peca = request.form['id_peca_editar'] 
+            
+            confirmacao = request.form.get('confirmacao', 'false')
 
+            try:
+
+                nome_peca = request.form['nome_peca']     
+                lote = request.form['lote']        
+                validade = request.form['validade'] 
+                fornecedor = request.form['fornecedor']
+                quant_peca = int(request.form['quant_peca'])
+                min_peca = int(request.form['min'])
+                max_peca = int(request.form['max'])
+                id_peca = int(request.form['id_peca_editar'])
+
+            except ValueError:
+                return render_template("editar_peca.html", 
+                                       erro="Erro: Os campos Quantidade, Mínimo e Máximo devem ser números inteiros.") 
+
+            if (quant_peca < min_peca or quant_peca > max_peca) and confirmacao == 'false':
+                
+                # Monta um dicionário com os dados atuais do form para pre-preenchimento
+                peca_dados = request.form.to_dict()
+                
+                # Renderiza a página novamente com a flag 'aviso_estoque'
+                return render_template("editar_peca.html", 
+                                       aviso_estoque=True,
+                                       peca=peca_dados,
+                                       erro="ATENÇÃO: A quantidade está fora dos limites MÍN/MÁX. Confirma a alteração?")
+            
             sql_update = "UPDATE estoque SET nome_peca = %s, lote = %s, validade = %s, fornecedor = %s, quant_peca = %s, min = %s, max = %s WHERE id_peca = %s"
             dados_peca = (nome_peca, lote, validade, fornecedor, quant_peca, min_peca, max_peca, id_peca)
 
             cursor.execute(sql_update, dados_peca)
             conexao.commit()
-
-            
-            if quant_peca < min_peca or quant_peca > max_peca:
-                return render_template("editar_peca.html", quant_peca = quant_peca, min_peca=min_peca, max_peca=max_peca)
-            
 
             return redirect(f"/listar_estoque") 
 
@@ -797,9 +812,9 @@ def delete_peca():
 """
 
 #página para registrar os serviços
-@app.route("/registro_servico", methods=['GET', 'POST'])
+@app.route("/cadastro_registro_servico", methods=['GET', 'POST'])
 @login_required
-def registro_servico():
+def cadastro_registro_servico():
     conexao = None
     if request.method == 'POST':
         
