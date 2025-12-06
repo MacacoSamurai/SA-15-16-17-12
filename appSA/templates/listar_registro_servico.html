@@ -34,9 +34,9 @@
                     <thead>
                         <tr>    
                             <th>ID</th>
-                            <th>Placa</th>
+                            <th>Placa / Cliente</th>
                             <th>Diagnóstico</th>
-                            <th>Peças</th>
+                            <th>Peças Usadas</th>
                             <th>Prazo</th>
                             <th>Opções</th>
                         </tr>
@@ -46,13 +46,22 @@
                         {% for registro in registros %}
                         <tr>
                             <td>{{ registro.id_reg }}</td>
-                            <td>{{ registro.placa }} <br><small>(Cli: {{ registro.cliente }})</small></td>
+                            <td>
+                                {{ registro.placa }} <br>
+                                <small>(Cli: {{ registro.nome_cliente }})</small>
+                            </td>
                             
                             <td title="{{ registro.diagnostico }}">
                                 {{ registro.diagnostico[:40] }}{% if registro.diagnostico|length > 40 %}...{% endif %}
                             </td>
                             
-                            <td>{{ registro.pecas_subs }}</td>
+                            <td>
+                                {% if registro.lista_pecas %}
+                                    {{ registro.lista_pecas }}
+                                {% else %}
+                                    <span style="color: #999;">Nenhuma peça</span>
+                                {% endif %}
+                            </td>
                             
                             <td>{{ registro.prazo }}</td>
                             

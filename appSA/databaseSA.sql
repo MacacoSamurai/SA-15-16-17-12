@@ -35,6 +35,10 @@ create table registro_servico (
     realizacao  datetime,
     cliente     int,
     placa       varchar(7),
+    valor_peca  float,
+    valor_servico  float,
+    valor_total  float,
+
     foreign key (placa)    references carros(placa_carro),
     foreign key (cliente)  references clientes(id_cliente),
     foreign key (func_id) references funcionarios(id_func)
