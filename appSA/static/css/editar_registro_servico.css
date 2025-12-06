@@ -1,4 +1,20 @@
-/* --- Reset e Configurações Globais --- */
+/* --- Variáveis de Estilo (Padrão do Site) --- */
+:root {
+    --cor-fundo: #1c1c1c;
+    --cor-card: #2c2c2c;
+    --cor-primaria: #e67e22; /* Laranja Padrão */
+    --cor-primaria-hover: #d35400;
+    --cor-texto: #ecf0f1;
+    --cor-texto-secundario: #ccc;
+    --cor-borda: #444;
+    --cor-input-bg: #333;
+    --cor-sucesso: #27ae60;
+    --cor-erro: #c0392b;
+    --cor-erro-bg: #ffdddd;
+    --fonte-padrao: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Configurações Globais --- */
 * {
     margin: 0;
     padding: 0;
@@ -6,17 +22,17 @@
 }
 
 body {
-    background-color: #1c1c1c; /* Fundo Cinza Escuro */
-    color: #ecf0f1;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--fonte-padrao);
     padding: 20px;
 }
 
-/* --- Botão Home (IMAGEM 100%) --- */
+/* --- Botão Home --- */
 .btn-home-fora {
     position: absolute;
     top: 25px;
@@ -24,131 +40,153 @@ body {
     width: 60px;
     height: 60px;
     background-color: #2d2d2d;
-    border: 1px solid #444;
+    border: 1px solid var(--cor-borda); 
     border-radius: 50%;
-    padding: 0; 
-    overflow: hidden; 
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     transition: all 0.3s ease;
     z-index: 10;
-    cursor: pointer;
 }
 
 .btn-home-fora:hover {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
     transform: scale(1.1);
-    border-color: #e67e22;
-    box-shadow: 0 0 15px rgba(230, 126, 34, 0.4);
 }
 
 .btn-home-fora img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 30px; /* Tamanho fixo para ícone */
+    height: 30px;
     filter: invert(1);
 }
 
-/* --- Card Principal --- */
+/* --- Container Principal (O Form) --- */
 .base {
-    background-color: #2d2d2d;
-    border: 1px solid #3a3a3a;
+    background-color: var(--cor-card);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     width: 100%;
     max-width: 900px;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    border-top: 4px solid var(--cor-primaria);
 }
 
-/* --- Cabeçalho Interno --- */
+/* --- Cabeçalho e Alertas --- */
 .cabecalho-form {
-    border-bottom: 2px solid #444;
-    padding-bottom: 15px;
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--cor-borda);
 }
 
 .cabecalho-form h1 {
-    color: #e67e22;
-    font-size: 1.8rem;
+    color: var(--cor-primaria);
+    font-size: 1.6rem;
     text-transform: uppercase;
 }
 
-/* Botão Voltar (Seta) */
+.alerta-erro {
+    background-color: var(--cor-erro-bg);
+    border-left: 5px solid var(--cor-erro);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alerta-erro p {
+    color: #a94442;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* --- Botão Voltar Mini --- */
 .btn-voltar-mini {
-    background-color: #444;
+    background-color: var(--cor-borda);
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     transition: 0.2s;
 }
+.btn-voltar-mini:hover { background-color: var(--cor-primaria); }
+.btn-voltar-mini img { width: 18px; filter: invert(1); }
 
-.btn-voltar-mini:hover { background-color: #e67e22; }
-.btn-voltar-mini img { width: 20px; filter: invert(1); }
-
-/* --- Grid de Inputs --- */
+/* --- Inputs e Layout --- */
 .container-inputs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 15px;
 }
 
-.full-width {
-    grid-column: span 2;
-}
+.full-width { grid-column: span 2; }
 
-.grupo-dados h2 {
-    color: #ccc;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    border-left: 4px solid #e67e22;
-    padding-left: 10px;
+.input-box {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 label {
-    display: block;
     margin-bottom: 5px;
-    color: #aaa;
+    color: var(--cor-texto-secundario);
     font-weight: bold;
     font-size: 0.9rem;
 }
 
+/* Títulos de seção (Peças, Valores) */
+.titulo-secao {
+    color: var(--cor-primaria);
+    border-bottom: 1px solid var(--cor-borda);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    display: block;
+    width: 100%;
+}
+
 input, select, textarea {
     width: 100%;
-    padding: 12px;
-    background-color: #333;
-    border: 1px solid #444;
-    border-radius: 8px;
-    color: white;
-    font-size: 1rem;
+    padding: 10px;
+    background-color: var(--cor-input-bg);
+    border: 1px solid var(--cor-borda);
+    border-radius: 6px;
+    color: var(--cor-texto);
+    font-size: 0.95rem;
     outline: none;
-    transition: 0.3s;
-    font-family: inherit;
+    transition: border 0.3s;
 }
 
 input:focus, select:focus, textarea:focus {
-    border-color: #e67e22;
-    background-color: #3a3a3a;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.5);
 }
 
-/* --- Área de Peças --- */
-.area-pecas {
-    background-color: #333;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px dashed #555;
-    margin-top: 10px;
+.input-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: #252525; /* Um pouco mais escuro */
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+/* --- Seção de Peças --- */
+.secao-pecas {
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed var(--cor-borda);
+    margin-bottom: 15px;
 }
 
 .peca-input-group {
@@ -158,61 +196,81 @@ input:focus, select:focus, textarea:focus {
     align-items: center;
 }
 
-/* Botões da área de peças */
+.select-peca { flex: 2; }
+.input-qtd { width: 80px; }
+
 .btn-remove {
-    background-color: #e74c3c;
+    background-color: var(--cor-erro);
     color: white;
     border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
     transition: 0.2s;
 }
-.btn-remove:hover { background-color: #c0392b; }
+.btn-remove:hover { background-color: #a93226; }
 
 .btn-add-peca {
+    width: 100%;
+    padding: 10px;
     background-color: transparent;
-    border: 2px solid #2ecc71;
-    color: #2ecc71;
-    padding: 10px 20px;
-    border-radius: 8px;
+    border: 1px solid var(--cor-sucesso);
+    color: var(--cor-sucesso);
+    border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
+    text-transform: uppercase;
     transition: 0.2s;
-    width: 100%;
-    margin-top: 10px;
+    font-size: 0.9rem;
 }
 .btn-add-peca:hover {
-    background-color: #2ecc71;
+    background-color: var(--cor-sucesso);
     color: white;
 }
 
-/* --- Botão Salvar Principal --- */
+/* --- Valores Grid --- */
+.valores-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Input de Total com destaque */
+input[id="valor_total"] {
+    background-color: #151515;
+    border: 1px solid var(--cor-sucesso);
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+/* --- Botão Salvar --- */
 .botao-salvar {
+    margin-top: 25px;
     width: 100%;
-    height: 55px;
-    background-color: #e67e22;
+    padding: 12px;
+    background-color: var(--cor-primaria);
     color: white;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     border: none;
-    border-radius: 10px;
+    border-radius: 6px;
     cursor: pointer;
     text-transform: uppercase;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-top: 30px;
+    transition: background 0.3s, transform 0.2s;
 }
 
 .botao-salvar:hover {
-    background-color: #d35400;
-    transform: scale(1.02);
+    background-color: var(--cor-primaria-hover);
+    transform: translateY(-2px);
 }
 
+/* Responsividade */
 @media (max-width: 768px) {
-    .container-inputs { grid-template-columns: 1fr; }
+    .container-inputs, .valores-grid { grid-template-columns: 1fr; }
     .full-width { grid-column: span 1; }
-    .peca-input-group { flex-direction: column; }
-    .btn-remove { width: 100%; }
+    .peca-input-group { flex-direction: column; align-items: stretch; }
+    .input-qtd { width: 100%; }
 }

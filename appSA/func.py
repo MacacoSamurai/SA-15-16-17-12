@@ -988,181 +988,133 @@ def listar_registro_servico():
 @app.route("/editar_registro_servico/<int:id_reg_original>", methods=['GET', 'POST'])
 @login_required
 def editar_registro_servico(id_reg_original):
-    # A EDIÇÃO DE REGISTROS É COMPLEXA POIS EXIGE REVERSÃO DE ESTOQUE
-    # Esta versão usa a lógica de ajuste por DELTA (diferença) para atualizar o estoque.
-
     conexao = None
     cursor = None
-    
+    pecas_disponiveis = []
+    pecas_usadas = []
+    registro = None
+    erro_message = None
+
     try:
         conexao = db_connection()
-        # ESSENCIAL: Usar dictionary=True para o POST funcionar, pois ele acessa campos por nome.
         cursor = conexao.cursor(dictionary=True)
 
+        # 1. Carregar lista de peças para o select (necessário em GET e POST)
+        sql_pecas = "SELECT id_peca, nome_peca, quant_peca, lote FROM estoque ORDER BY nome_peca"
+        cursor.execute(sql_pecas)
+        pecas_disponiveis = cursor.fetchall()
+
         if request.method == 'POST':
-            # --- LÓGICA POST (AJUSTE DE ESTOQUE POR DELTA) ---
+            # Coleta dados básicos
+            cpf_cliente = request.form.get('cpf_cliente')
+            diagnostico = request.form.get('diagnostico')
+            prazo = request.form.get('prazo')
+            realizacao = request.form.get('realizacao')
             
-            # CAMPOS PRINCIPAIS (Editáveis)
-            diagnostico = request.form['diagnostico']
-            func_id     = session.get('user_id') 
-            prazo       = request.form['prazo'] 
-            realizacao  = request.form['realizacao']
-            cpf_cliente = request.form['cpf_cliente']
-            id_reg      = request.form['id_reg_editar'] 
-            
-            # 1. Coletar dados do formulário (Novos)
-            pecas_ids_novas = request.form.getlist('peca_id[]')
-            # Garante que só peças com quantidade > 0 sejam consideradas
-            quantidades_novas = [int(q) for q in request.form.getlist('quantidade[]') if q.isdigit() and int(q) > 0]
-            
-            # Mapeia as novas peças: {id_peca: quantidade}
-            novas_pecas_map = dict(zip(pecas_ids_novas, quantidades_novas))
-            
-            # 2. Buscar Cliente/Carro e Peças Atuais no DB
-            sql_cliente_carro = "SELECT id_cliente, placa_carro FROM clientes WHERE cpf = %s"
-            cursor.execute(sql_cliente_carro, (cpf_cliente,))
+            # Coleta valores monetários
+            v_servico_str = request.form.get('valor_servico', '0')
+            v_pecas_str = request.form.get('valor_pecas', '0')
+            valor_servico = float(v_servico_str) if v_servico_str else 0.0
+            valor_pecas = float(v_pecas_str) if v_pecas_str else 0.0
+            valor_total = valor_servico + valor_pecas
+
+            # Coleta as peças do formulário
+            pecas_ids_form = request.form.getlist('peca_id[]')
+            quantidades_form = request.form.getlist('quantidade[]')
+
+            # Busca ID do cliente e Placa
+            sql_cliente = "SELECT id_cliente, placa_carro FROM clientes WHERE cpf = %s"
+            cursor.execute(sql_cliente, (cpf_cliente,))
             cliente_data = cursor.fetchone()
-            
+
             if not cliente_data:
-                # Retorna erro e repassa o id original para a URL de edição
-                flash("Cliente com este CPF não encontrado!", "erro")
+                flash(f"Cliente com CPF {cpf_cliente} não encontrado.", "erro")
                 return redirect(url_for('editar_registro_servico', id_reg_original=id_reg_original))
 
-            cliente_id = cliente_data['id_cliente']
-            placa_carro = cliente_data['placa_carro']
+            id_cliente = cliente_data['id_cliente']
+            placa = cliente_data['placa_carro']
+            func_id = session.get('user_id')
+
+            # ---------------------------------------------------------
+            # ATUALIZAÇÃO DE ESTOQUE (Reverter antigas -> Aplicar novas)
+            # ---------------------------------------------------------
             
-            sql_pecas_originais = "SELECT id_peca_estoque, quantidade_usada FROM servico_pecas WHERE id_registro = %s"
-            cursor.execute(sql_pecas_originais, (id_reg,))
-            pecas_originais_db = cursor.fetchall()
-            
-            # Mapeia as peças atuais: {id_peca (str): quantidade (int)}
-            pecas_atuais_map = {str(p['id_peca_estoque']): p['quantidade_usada'] for p in pecas_originais_db}
-            
-            # Conjunto de todos os IDs de peças envolvidas (antigas e novas)
-            todos_pecas_ids = set(pecas_atuais_map.keys()) | set(novas_pecas_map.keys())
-            
-            # 3. CALCULAR DELTA E ATUALIZAR ESTOQUE/SERVICO_PECAS
-            
-            # %s pode ser positivo (devolver peça) ou negativo (retirar peça)
-            sql_update_estoque = "UPDATE estoque SET quant_peca = quant_peca + %s WHERE id_peca = %s" 
-            
-            for peca_id in todos_pecas_ids:
-                # O get() garante que se a peça não existir no mapa, o valor é 0
-                quant_atual = pecas_atuais_map.get(peca_id, 0)
-                quant_nova = novas_pecas_map.get(peca_id, 0)
-                
-                # delta_estoque é a quantidade que precisa ser *adicionada* ao estoque.
-                # Exemplo: Atual=5, Nova=3 -> delta=2 (Devolver 2 peças)
-                # Exemplo: Atual=5, Nova=7 -> delta=-2 (Retirar 2 peças)
-                delta_estoque = quant_atual - quant_nova 
-                
-                if delta_estoque != 0:
-                    # Aplica o ajuste no estoque.
-                    cursor.execute(sql_update_estoque, (delta_estoque, peca_id))
+            # 1. Buscar peças que estavam sendo usadas antes (para devolver ao estoque)
+            sql_antigas = "SELECT id_peca_estoque, quantidade_usada FROM servico_pecas WHERE id_registro = %s"
+            cursor.execute(sql_antigas, (id_reg_original,))
+            pecas_antigas = cursor.fetchall()
+
+            # Devolve peças antigas ao estoque
+            for p in pecas_antigas:
+                sql_dev = "UPDATE estoque SET quant_peca = quant_peca + %s WHERE id_peca = %s"
+                cursor.execute(sql_dev, (p['quantidade_usada'], p['id_peca_estoque']))
+
+            # Limpa relacionamento antigo
+            sql_del_rel = "DELETE FROM servico_pecas WHERE id_registro = %s"
+            cursor.execute(sql_del_rel, (id_reg_original,))
+
+            # 2. Inserir novas peças e baixar do estoque
+            for pid, qtd in zip(pecas_ids_form, quantidades_form):
+                if int(qtd) > 0:
+                    # Insere no relacionamento
+                    sql_ins_rel = "INSERT INTO servico_pecas (id_registro, id_peca_estoque, quantidade_usada) VALUES (%s, %s, %s)"
+                    cursor.execute(sql_ins_rel, (id_reg_original, pid, int(qtd)))
                     
-                if quant_nova > 0:
-                    # Peça ainda está em uso (ou foi adicionada), então atualiza/insere
-                    if peca_id in pecas_atuais_map:
-                        # Atualizar quantidade da peça na tabela de relacionamento
-                        sql_update_rel = "UPDATE servico_pecas SET quantidade_usada = %s WHERE id_registro = %s AND id_peca_estoque = %s"
-                        # É preciso usar o id_peca como inteiro aqui, se for a convenção do DB
-                        cursor.execute(sql_update_rel, (quant_nova, id_reg, int(peca_id))) 
-                    else:
-                        # Inserir nova peça na tabela de relacionamento
-                        sql_insert_rel = "INSERT INTO servico_pecas (id_registro, id_peca_estoque, quantidade_usada) VALUES (%s, %s, %s)"
-                        cursor.execute(sql_insert_rel, (id_reg, int(peca_id), quant_nova))
-                
-                elif quant_nova == 0 and peca_id in pecas_atuais_map:
-                    # A peça foi removida, deletar a relação
-                    sql_delete_rel = "DELETE FROM servico_pecas WHERE id_registro = %s AND id_peca_estoque = %s"
-                    cursor.execute(sql_delete_rel, (id_reg, int(peca_id)))
-            
-            # 4. Atualizar registro principal (sem valores monetários)
+                    # Baixa do estoque
+                    sql_baixa = "UPDATE estoque SET quant_peca = quant_peca - %s WHERE id_peca = %s"
+                    cursor.execute(sql_baixa, (int(qtd), pid))
+
+            # ---------------------------------------------------------
+            # ATUALIZAÇÃO DO REGISTRO PRINCIPAL
+            # ---------------------------------------------------------
             sql_update = """
-            UPDATE registro_servico SET 
-            diagnostico = %s, func_id = %s, prazo = %s, 
-            realizacao = %s, cliente = %s, placa = %s 
-            WHERE id_reg = %s
+                UPDATE registro_servico 
+                SET diagnostico = %s, func_id = %s, prazo = %s, realizacao = %s, 
+                    cliente = %s, placa = %s, valor_servico = %s, valor_peca = %s, valor_total = %s
+                WHERE id_reg = %s
             """
-            dados_reg = (diagnostico, func_id, prazo, realizacao, cliente_id, placa_carro, id_reg)
-            # cursor.execute exige que todos os dados sejam passados na ordem correta
-            cursor.execute(sql_update, dados_reg) 
+            cursor.execute(sql_update, (diagnostico, func_id, prazo, realizacao, id_cliente, placa, valor_servico, valor_pecas, valor_total, id_reg_original))
             
             conexao.commit()
-            flash("Registro de serviço e estoque atualizados com sucesso!", "sucesso")
+            flash("Serviço atualizado com sucesso!", "sucesso")
             return redirect(url_for('listar_registro_servico'))
 
         else:
-            # --- FASE GET (BUSCAR DADOS) ---
-            # O cursor deve ser mantido como dictionary=True para o GET funcionar corretamente.
+            # --- FASE GET ---
             
-            # 1. Buscar Dados do Registro Principal (incluindo valores para readonly)
-            sql_select = """
-            SELECT 
-                rs.id_reg, rs.diagnostico, rs.prazo, rs.realizacao, rs.func_id, rs.placa,
-                c.cpf AS cpf_cliente, rs.valor_servico, rs.valor_pecas, rs.valor_total
-            FROM registro_servico rs
-            JOIN clientes c ON rs.cliente = c.id_cliente
-            WHERE rs.id_reg = %s
+            # 1. Dados do Registro (Corrigido valor_pecas -> valor_peca)
+            sql_reg = """
+                SELECT rs.id_reg, rs.diagnostico, rs.prazo, rs.realizacao, rs.func_id, rs.placa, 
+                       c.cpf as cpf_cliente, rs.valor_servico, rs.valor_peca, rs.valor_total
+                FROM registro_servico rs
+                JOIN clientes c ON rs.cliente = c.id_cliente
+                WHERE rs.id_reg = %s
             """
-            cursor.execute(sql_select, (id_reg_original,))
-            reg_data = cursor.fetchone() # Retorna dicionário (dictionary=True)
-            
-            if reg_data is None:
-                flash(f"Registro com ID {id_reg_original} não encontrado.", "erro")
-                # Assumindo que 'pagi' é a rota inicial segura
-                return redirect(url_for('pagi'))
-            
-            # Formatação de datas para input type="datetime-local"
-            prazo_formatado = reg_data['prazo'].strftime('%Y-%m-%dT%H:%M') if reg_data['prazo'] else ''
-            realizacao_formatada = reg_data['realizacao'].strftime('%Y-%m-%dT%H:%M') if reg_data['realizacao'] else ''
+            cursor.execute(sql_reg, (id_reg_original,))
+            registro = cursor.fetchone()
 
-            registro = {
-                'id_reg': reg_data['id_reg'],
-                'diagnostico': reg_data['diagnostico'],
-                'prazo': prazo_formatado,
-                'realizacao': realizacao_formatada,
-                'cpf_cliente': reg_data['cpf_cliente'],
-                'placa': reg_data['placa'],
-                # Valores monetários (para serem exibidos como readonly no template)
-                'valor_servico': reg_data['valor_servico'],
-                'valor_pecas': reg_data['valor_pecas'],
-                'valor_total': reg_data['valor_total']
-            }
-            
-            # 2. Buscar Peças Usadas (Para repopular a tabela dinâmica de edição)
-            sql_pecas_usadas = """
-            SELECT sp.id_peca_estoque, sp.quantidade_usada, e.nome_peca, e.quant_peca AS estoque_atual
-            FROM servico_pecas sp
-            JOIN estoque e ON sp.id_peca_estoque = e.id_peca
-            WHERE sp.id_registro = %s
-            """
-            cursor.execute(sql_pecas_usadas, (id_reg_original,))
-            # Usando 'pecas_usadas_completas' para ser mais claro no template
-            registro['pecas_usadas_completas'] = cursor.fetchall() 
-            
-            # 3. Buscar todas as peças disponíveis para o dropdown de adição
-            sql_pecas_disponiveis = "SELECT id_peca, nome_peca, quant_peca FROM estoque ORDER BY nome_peca"
-            cursor.execute(sql_pecas_disponiveis)
-            pecas_disponiveis = cursor.fetchall()
-            
-            return render_template("editar_registro_servico.html", 
-                                registro=registro, 
-                                pecas_disponiveis=pecas_disponiveis) 
+            if not registro:
+                flash("Registro não encontrado.", "erro")
+                return redirect(url_for('listar_registro_servico'))
+
+            # 2. Dados das Peças Usadas (Faltava isso no original)
+            sql_usadas = "SELECT id_peca_estoque, quantidade_usada FROM servico_pecas WHERE id_registro = %s"
+            cursor.execute(sql_usadas, (id_reg_original,))
+            pecas_usadas = cursor.fetchall()
 
     except mysql.connector.Error as err:
-        print(f"Erro ao editar registro: {err}")
-        if conexao:
-            conexao.rollback()
-        # Retorna para a página de listagem em caso de erro no DB
-        flash(f"Erro no banco de dados: Não foi possível editar o registro. Detalhe: {err.msg}", "erro")
-        return redirect(url_for('listar_registro_servico'))
+        erro_message = f"Erro de banco de dados: {err}"
+        if conexao: conexao.rollback()
     
     finally:
         if cursor: cursor.close()
-        if conexao and conexao.is_connected():
-            conexao.close()
+        if conexao: conexao.close()
 
+    return render_template('editar_registro_servico.html', 
+                           registro=registro, 
+                           pecas_disponiveis=pecas_disponiveis, 
+                           pecas_usadas=pecas_usadas,
+                           erro=erro_message)
 
 #pagina para deletar os registros (e reverter o estoque)
 @app.route("/delete_registro_servico", methods=['POST'])
