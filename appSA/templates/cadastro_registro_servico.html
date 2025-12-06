@@ -25,7 +25,7 @@
         </div>
 
         {% if erro %}
-            <p style="color: #e74c3c; text-align: center; font-weight: bold;">{{ erro }}</p>
+            <p style="color: #e74c3c; text-align: center; font-weight: bold; margin-bottom: 15px;">{{ erro }}</p>
         {% endif %}
 
         <form action="/cadastro_registro_servico" method="POST">
@@ -33,17 +33,16 @@
             <div class="container-inputs">
                 
                 <div class="grupo-dados">
-                    <h2>Informações do Veículo</h2>
+                    <h2>Informações do Cliente</h2>
                     
                     <div class="input-box">
-                        <label>Placa do Carro</label>
-                        <input type="text" name="placa_carro" placeholder="ABC-1234" required>
+                        <label>CPF do Cliente</label>
+                        <input type="text" name="cpf_cliente" placeholder="Digite o CPF" required>
                     </div>
 
                     <div class="input-box">
                         <label>Funcionário Responsável</label>
-                        <input name="funcionario_id" placeholder="Ex: João jonas" required></input>
-
+                        <input type="text" value="Logado na Sessão" disabled style="opacity: 0.6;">
                     </div>
                 </div>
 
@@ -51,19 +50,19 @@
                     <h2>Detalhes do Serviço</h2>
                     
                     <div class="input-box">
-                        <label>Serviço Realizado</label>
-                        <input type="text" name="servico_realizado" placeholder="Ex: Troca de Óleo" required>
+                        <label>Diagnóstico / Serviço</label>
+                        <input type="text" name="diagnostico" placeholder="Ex: Troca de Óleo" required>
                     </div>
 
                     <div class="input-box">
-                        <label>Data</label>
-                        <input type="date" name="data_servico">
+                        <label>Prazo Estimado</label>
+                        <input type="datetime-local" name="prazo" required>
                     </div>
-                </div>
-
-                <div class="grupo-dados full-width">
-                    <label>Descrição Detalhada / Observações</label>
-                    <textarea name="descricao" rows="3" placeholder="Detalhes técnicos adicionais..."></textarea>
+                    
+                    <div class="input-box">
+                        <label>Data Realização</label>
+                        <input type="datetime-local" name="realizacao" required>
+                    </div>
                 </div>
 
                 <div class="grupo-dados full-width">
@@ -72,16 +71,18 @@
                     <div class="area-pecas">
                         <div id="pecas-container">
                             <div class="peca-input-group">
-                                <select name="peca_id[]" style="flex: 2;">
+                                <select name="peca_id[]" style="flex: 2;" required>
                                     <option value="" disabled selected>Selecione a Peça...</option>
-                                    {% for peca in pecas %}
-                                        <option value="{{ peca.id_peca }}">{{ peca.nome_peca }} (Estoque: {{ peca.quant_peca }})</option>
+                                    {% for peca in pecas_disponiveis %}
+                                        <option value="{{ peca.id_peca }}">
+                                            {{ peca.nome_peca }} (Lote: {{ peca.lote }} | Disp: {{ peca.quant_peca }})
+                                        </option>
                                     {% endfor %}
                                 </select>
                                 
-                                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;">
+                                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;" required>
                                 
-                                <button type="button" class="btn-remove" onclick="this.parentNode.remove()" style="opacity: 0.5; cursor: not-allowed;" disabled>X</button>
+                                <button type="button" class="btn-remove" onclick="removerPeca(this)" disabled style="opacity: 0.5;">X</button>
                             </div>
                         </div>
 
@@ -89,56 +90,67 @@
                     </div>
                 </div>
 
-            </div>
+                <div class="full-width">
+                    <h2>Valores</h2>
+                    <div class="valores-grid">
+                        
+                        <div class="input-box">
+                            <label>Valor Peças (R$)</label>
+                            <input type="number" step="0.01" id="valor_pecas" name="valor_pecas" placeholder="0.00" oninput="calcularTotal()">
+                        </div>
 
-            <button type="submit" class="botao-salvar">SALVAR REGISTRO</button>
+                        <div class="input-box">
+                            <label>Valor Mão de Obra (R$)</label>
+                            <input type="number" step="0.01" id="valor_servico" name="valor_servico" placeholder="0.00" oninput="calcularTotal()">
+                        </div>
+
+                        <div class="input-box">
+                            <label>Valor Total (R$)</label>
+                            <input type="number" step="0.01" id="valor_total" placeholder="0.00" readonly>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div> <button type="submit" class="botao-salvar">SALVAR REGISTRO</button>
         </form>
+    </div>
 
     <script>
         function addPeca() {
             const container = document.getElementById('pecas-container');
-            const newGroup = document.createElement('div');
-            newGroup.className = 'peca-input-group'; // Usa a classe CSS que criamos
             
-            // Recria o HTML do select usando a lista que o Jinja2 gerou no primeiro select
-            // Dica: Pegamos o HTML interno do primeiro select para copiar as opções
-            const firstSelect = document.querySelector('select[name="peca_id[]"]');
-            const optionsHTML = firstSelect.innerHTML;
+            // Pega o primeiro grupo para usar como modelo
+            const primeiroGrupo = container.querySelector('.peca-input-group');
+            const novoGrupo = document.createElement('div');
+            novoGrupo.className = 'peca-input-group';
             
-            newGroup.innerHTML = `
+            // Clona o conteúdo do select original
+            const selectHTML = primeiroGrupo.querySelector('select').innerHTML;
+            
+            novoGrupo.innerHTML = `
                 <select name="peca_id[]" style="flex: 2;" required>
-                    ${optionsHTML}
+                    ${selectHTML}
                 </select>
-                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" required style="width: 80px;">
-                <button type="button" class="btn-remove" onclick="this.parentNode.remove()">X</button>
+                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;" required>
+                <button type="button" class="btn-remove" onclick="removerPeca(this)">X</button>
             `;
             
-            container.appendChild(newGroup);
+            container.appendChild(novoGrupo);
+        }
+
+        function removerPeca(btn) {
+            // Remove o elemento pai do botão (a div .peca-input-group)
+            btn.parentNode.remove();
+        }
+
+        function calcularTotal() {
+            const vPecas = parseFloat(document.getElementById('valor_pecas').value) || 0;
+            const vServico = parseFloat(document.getElementById('valor_servico').value) || 0;
+            const total = vPecas + vServico;
+            document.getElementById('valor_total').value = total.toFixed(2);
         }
     </script>
 
-    <h2>Valores</h2>
-    <div class="container-inputs valores-grid">
-        
-        <div class="input-box">
-            <label>Valor Peças (R$)</label>
-            <input type="number" step="0.01" name="valor_pecas" placeholder="0.00">
-        </div>
-
-        <div class="input-box">
-            <label>Valor Mão de Obra (R$)</label>
-            <input type="number" step="0.01" name="valor_mao_obra" placeholder="0.00">
-        </div>
-
-        <div class="input-box">
-            <label>Valor Total (R$)</label>
-            <input type="number" step="0.01" name="valor_total" placeholder="Calculado auto" readonly>
-        </div>
-
-    </div>
-</div>
-</form>
-
-
 </body>
-</html>
+</html> 

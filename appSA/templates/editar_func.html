@@ -44,7 +44,11 @@
 
                     <div class="input-box">
                         <label>Cargo</label>
-                        <input type="text" name="cargo" value="{{ funcionario.cargo }}" required>
+                        <select name="cargo" required>
+                            <option value="{{ funcionario.cargo }}">{{ funcionario.cargo }}</option>
+                            <option value="funcionario">Funcionário</option>
+                            <option value="gerente">Gerente</option>
+                        </select>
                     </div>
                 </div>
 
