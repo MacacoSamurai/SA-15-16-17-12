@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/pagi.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png">
+    <title>Menu Principal</title>
+</head>
+
+<body>
+
+    <a href="/logout" class="logout-container" title="Sair do Sistema">
+        <img src="/static/imagens/logout.png" alt="Sair" class="img">
+    </a>
+
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        
+        <div class="base">
+            <h2>Painel de Controle</h2>
+
+            <a href="listar_clientes" style="width: 100%;">
+                <button class="botao-lista">Clientes</button>
+            </a>
+            
+            <a href="listar_estoque" style="width: 100%;">
+                <button class="botao-lista">Estoque</button>
+            </a>
+            
+            <a href="listar_func" style="width: 100%;">
+                <button class="botao-lista">Funcionários</button>
+            </a> 
+        </div>
+
+        <a href="listar_registro_servico" class="servico-link">
+            <button class="botao-destaque">Registro Serviços</button>
+        </a>
+
+    </div>
+
+</body>
+</html>

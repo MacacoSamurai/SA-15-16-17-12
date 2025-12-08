@@ -1,0 +1,276 @@
+/* --- Variáveis de Estilo (Padrão do Site) --- */
+:root {
+    --cor-fundo: #1c1c1c;
+    --cor-card: #2c2c2c;
+    --cor-primaria: #e67e22; /* Laranja Padrão */
+    --cor-primaria-hover: #d35400;
+    --cor-texto: #ecf0f1;
+    --cor-texto-secundario: #ccc;
+    --cor-borda: #444;
+    --cor-input-bg: #333;
+    --cor-sucesso: #27ae60;
+    --cor-erro: #c0392b;
+    --cor-erro-bg: #ffdddd;
+    --fonte-padrao: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Configurações Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: var(--fonte-padrao);
+    padding: 20px;
+}
+
+/* --- Botão Home --- */
+.btn-home-fora {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #2d2d2d;
+    border: 1px solid var(--cor-borda); 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.btn-home-fora:hover {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    transform: scale(1.1);
+}
+
+.btn-home-fora img {
+    width: 30px; /* Tamanho fixo para ícone */
+    height: 30px;
+    filter: invert(1);
+}
+
+/* --- Container Principal (O Form) --- */
+.base {
+    background-color: var(--cor-card);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 900px;
+    border-top: 4px solid var(--cor-primaria);
+}
+
+/* --- Cabeçalho e Alertas --- */
+.cabecalho-form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.cabecalho-form h1 {
+    color: var(--cor-primaria);
+    font-size: 1.6rem;
+    text-transform: uppercase;
+}
+
+.alerta-erro {
+    background-color: var(--cor-erro-bg);
+    border-left: 5px solid var(--cor-erro);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alerta-erro p {
+    color: #a94442;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* --- Botão Voltar Mini --- */
+.btn-voltar-mini {
+    background-color: var(--cor-borda);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-voltar-mini:hover { background-color: var(--cor-primaria); }
+.btn-voltar-mini img { width: 18px; filter: invert(1); }
+
+/* --- Inputs e Layout --- */
+.container-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.full-width { grid-column: span 2; }
+
+.input-box {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    color: var(--cor-texto-secundario);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Títulos de seção (Peças, Valores) */
+.titulo-secao {
+    color: var(--cor-primaria);
+    border-bottom: 1px solid var(--cor-borda);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    display: block;
+    width: 100%;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--cor-input-bg);
+    border: 1px solid var(--cor-borda);
+    border-radius: 6px;
+    color: var(--cor-texto);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.5);
+}
+
+.input-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: #252525; /* Um pouco mais escuro */
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+/* --- Seção de Peças --- */
+.secao-pecas {
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed var(--cor-borda);
+    margin-bottom: 15px;
+}
+
+.peca-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.select-peca { flex: 2; }
+.input-qtd { width: 80px; }
+
+.btn-remove {
+    background-color: var(--cor-erro);
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-remove:hover { background-color: #a93226; }
+
+.btn-add-peca {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    border: 1px solid var(--cor-sucesso);
+    color: var(--cor-sucesso);
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+.btn-add-peca:hover {
+    background-color: var(--cor-sucesso);
+    color: white;
+}
+
+/* --- Valores Grid --- */
+.valores-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Input de Total com destaque */
+input[id="valor_total"] {
+    background-color: #151515;
+    border: 1px solid var(--cor-sucesso);
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+/* --- Botão Salvar --- */
+.botao-salvar {
+    margin-top: 25px;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--cor-primaria);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.botao-salvar:hover {
+    background-color: var(--cor-primaria-hover);
+    transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container-inputs, .valores-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
+    .peca-input-group { flex-direction: column; align-items: stretch; }
+    .input-qtd { width: 100%; }
+}

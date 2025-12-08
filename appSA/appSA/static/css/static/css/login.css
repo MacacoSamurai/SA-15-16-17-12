@@ -1,0 +1,104 @@
+/* --- Reset e Configurações Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1c1c1c; /* Fundo Asfalto */
+    color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Container do Login (Base) --- */
+.base {
+    background-color: #2d2d2d;
+    border: 1px solid #3a3a3a;
+    width: 400px;
+    padding: 40px;
+    border-radius: 13px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+/* --- Título LOGIN --- */
+.txt {
+    color: #e67e22; /* Laranja */
+    font-size: 2rem;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* --- Formulário --- */
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaço entre os campos */
+}
+
+/* Rótulos (Texto "Digite seu Usuário"...) */
+label {
+    color: #ccc;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Campos de Texto (Inputs) */
+.campo {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.campo:focus {
+    border-color: #e67e22; /* Borda laranja ao clicar */
+    background-color: #404040;
+}
+
+/* --- Botão Enviar --- */
+.botao {
+    margin-top: 10px;
+    width: 100%;
+    height: 50px;
+    background-color: #e67e22; /* Laranja */
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-transform: uppercase;
+}
+
+.botao:hover {
+    background-color: #d35400; /* Laranja mais escuro */
+    transform: scale(1.02);
+}
+
+/* --- Mensagem de Erro --- */
+.msg-erro {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+}
