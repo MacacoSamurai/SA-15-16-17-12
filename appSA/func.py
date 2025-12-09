@@ -1010,13 +1010,6 @@ def editar_registro_servico(id_reg_original):
             diagnostico = request.form.get('diagnostico')
             prazo = request.form.get('prazo')
             realizacao = request.form.get('realizacao')
-            
-            # Coleta valores monetários
-            v_servico_str = request.form.get('valor_servico', '0')
-            v_pecas_str = request.form.get('valor_pecas', '0')
-            valor_servico = float(v_servico_str) if v_servico_str else 0.0
-            valor_pecas = float(v_pecas_str) if v_pecas_str else 0.0
-            valor_total = valor_servico + valor_pecas
 
             # Coleta as peças do formulário
             pecas_ids_form = request.form.getlist('peca_id[]')
@@ -1070,10 +1063,10 @@ def editar_registro_servico(id_reg_original):
             sql_update = """
                 UPDATE registro_servico 
                 SET diagnostico = %s, func_id = %s, prazo = %s, realizacao = %s, 
-                    cliente = %s, placa = %s, valor_servico = %s, valor_peca = %s, valor_total = %s
+                    cliente = %s, placa = %s
                 WHERE id_reg = %s
             """
-            cursor.execute(sql_update, (diagnostico, func_id, prazo, realizacao, id_cliente, placa, valor_servico, valor_pecas, valor_total, id_reg_original))
+            cursor.execute(sql_update, (diagnostico, func_id, prazo, realizacao, id_cliente, placa, id_reg_original))
             
             conexao.commit()
             flash("Serviço atualizado com sucesso!", "sucesso")

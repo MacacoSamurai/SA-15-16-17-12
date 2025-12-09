@@ -2,7 +2,7 @@
 :root {
     --cor-fundo: #1c1c1c;
     --cor-card: #2c2c2c;
-    --cor-primaria: #e67e22; /* Laranja Padrão */
+    --cor-primaria: #e67e22;
     --cor-primaria-hover: #d35400;
     --cor-texto: #ecf0f1;
     --cor-texto-secundario: #ccc;
@@ -37,32 +37,37 @@ body {
     position: absolute;
     top: 25px;
     left: 25px;
-    width: 60px;
-    height: 60px;
+    width: 50px;       /* Era 60px, ajustado para 50px */
+    height: 50px;      /* Era 60px, ajustado para 50px */
     background-color: #2d2d2d;
     border: 1px solid var(--cor-borda); 
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0;        /* Importante para a imagem cobrir se necessário */
+    overflow: hidden;  /* Garante que nada saia do círculo */
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     transition: all 0.3s ease;
     z-index: 10;
 }
 
 .btn-home-fora:hover {
-    background-color: var(--cor-primaria);
-    border-color: var(--cor-primaria);
     transform: scale(1.1);
+    border-color: var(--cor-primaria);
+    /* O efeito de brilho igual ao do cadastro: */
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
+    background-color: #2d2d2d; /* Mantém o fundo escuro, não fica laranja */
 }
 
 .btn-home-fora img {
-    width: 30px; /* Tamanho fixo para ícone */
-    height: 30px;
+    width: 100%;      /* A imagem ocupa todo o botão */
+    height: 100%;
+    object-fit: cover;
     filter: invert(1);
 }
 
-/* --- Container Principal (O Form) --- */
+/* --- Container Principal --- */
 .base {
     background-color: var(--cor-card);
     padding: 30px;
@@ -70,10 +75,9 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     width: 100%;
     max-width: 900px;
-    border-top: 4px solid var(--cor-primaria);
 }
 
-/* --- Cabeçalho e Alertas --- */
+/* --- Cabeçalho --- */
 .cabecalho-form {
     display: flex;
     align-items: center;
@@ -89,18 +93,15 @@ body {
     text-transform: uppercase;
 }
 
-.alerta-erro {
-    background-color: var(--cor-erro-bg);
-    border-left: 5px solid var(--cor-erro);
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-.alerta-erro p {
-    color: #a94442;
-    margin: 0;
-    font-weight: bold;
+/* Títulos h2 dentro dos grupos */
+.grupo-dados h2 {
+    color: var(--cor-texto-secundario);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: normal;
+    border-left: 3px solid var(--cor-primaria);
+    padding-left: 10px;
+    margin-top: 10px;
 }
 
 /* --- Botão Voltar Mini --- */
@@ -141,17 +142,7 @@ label {
     font-size: 0.9rem;
 }
 
-/* Títulos de seção (Peças, Valores) */
-.titulo-secao {
-    color: var(--cor-primaria);
-    border-bottom: 1px solid var(--cor-borda);
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    display: block;
-    width: 100%;
-}
-
-input, select, textarea {
+input, select {
     width: 100%;
     padding: 10px;
     background-color: var(--cor-input-bg);
@@ -163,7 +154,7 @@ input, select, textarea {
     transition: border 0.3s;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus, select:focus {
     border-color: var(--cor-primaria);
     box-shadow: 0 0 5px rgba(230, 126, 34, 0.5);
 }
@@ -171,17 +162,12 @@ input:focus, select:focus, textarea:focus {
 .input-disabled {
     cursor: not-allowed;
     opacity: 0.6;
-    background-color: #252525; /* Um pouco mais escuro */
-}
-
-textarea {
-    resize: vertical;
-    min-height: 80px;
-    font-family: inherit;
+    background-color: #252525;
+    color: #000000;
 }
 
 /* --- Seção de Peças --- */
-.secao-pecas {
+.area-pecas {
     background-color: #252525;
     padding: 15px;
     border-radius: 8px;
@@ -195,9 +181,6 @@ textarea {
     margin-bottom: 10px;
     align-items: center;
 }
-
-.select-peca { flex: 2; }
-.input-qtd { width: 80px; }
 
 .btn-remove {
     background-color: var(--cor-erro);
@@ -230,22 +213,6 @@ textarea {
     color: white;
 }
 
-/* --- Valores Grid --- */
-.valores-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-/* Input de Total com destaque */
-input[id="valor_total"] {
-    background-color: #151515;
-    border: 1px solid var(--cor-sucesso);
-    color: #2ecc71;
-    font-weight: bold;
-}
-
 /* --- Botão Salvar --- */
 .botao-salvar {
     margin-top: 25px;
@@ -269,8 +236,7 @@ input[id="valor_total"] {
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .container-inputs, .valores-grid { grid-template-columns: 1fr; }
+    .container-inputs { grid-template-columns: 1fr; }
     .full-width { grid-column: span 1; }
     .peca-input-group { flex-direction: column; align-items: stretch; }
-    .input-qtd { width: 100%; }
 }

@@ -35,7 +35,7 @@
             <div class="container-inputs">
                 
                 <div class="grupo-dados">
-                    <h2>Informações do Cliente</h2>
+                    <h2>Dados Principais</h2>
                     
                     <div class="input-box">
                         <label>CPF do Cliente</label>
@@ -44,20 +44,16 @@
                     </div>
 
                     <div class="input-box">
-                        <label>Funcionário Responsável</label>
-                        <input type="text" value="Logado na Sessão" disabled style="opacity: 0.6; background: #eee;">
-                    </div>
-                </div>
-
-                <div class="grupo-dados">
-                    <h2>Detalhes do Serviço</h2>
-                    
-                    <div class="input-box">
                         <label>Diagnóstico / Serviço</label>
                         <input type="text" name="diagnostico" placeholder="Ex: Troca de Óleo" 
                                value="{{ dados_form.diagnostico if dados_form else '' }}" required>
                     </div>
 
+                </div>
+
+                <div class="grupo-dados">
+                    <h2>Prazos e Datas</h2>
+                    
                     <div class="input-box">
                         <label>Prazo Estimado</label>
                         <input type="datetime-local" name="prazo" 
@@ -114,7 +110,7 @@
 
                         <div class="input-box">
                             <label>Valor Total (R$)</label>
-                            <input type="number" step="0.01" id="valor_total" placeholder="0.00" readonly style="background-color: #f0f0f0;">
+                            <input type="number" step="0.01" id="valor_total" placeholder="0.00" readonly class="valor-total">
                         </div>
 
                     </div>
@@ -129,13 +125,9 @@
     <script>
         function addPeca() {
             const container = document.getElementById('pecas-container');
-            
-            // Pega o primeiro grupo para usar como modelo
             const primeiroGrupo = container.querySelector('.peca-input-group');
             const novoGrupo = document.createElement('div');
             novoGrupo.className = 'peca-input-group';
-            
-            // Clona o HTML do select
             const selectHTML = primeiroGrupo.querySelector('select').outerHTML;
             
             novoGrupo.innerHTML = `
@@ -143,16 +135,12 @@
                 <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;" required>
                 <button type="button" class="btn-remove" onclick="removerPeca(this)" style="cursor: pointer;">X</button>
             `;
-            
             container.appendChild(novoGrupo);
-
-            // Reseta o valor selecionado no novo select para forçar o usuário a escolher
             const novoSelect = novoGrupo.querySelector('select');
             novoSelect.selectedIndex = 0;
         }
 
         function removerPeca(btn) {
-            // Remove a linha inteira
             btn.parentNode.remove();
         }
 
@@ -163,7 +151,6 @@
             document.getElementById('valor_total').value = total.toFixed(2);
         }
 
-        // Roda o cálculo ao carregar a página (caso tenha voltado com erro)
         document.addEventListener("DOMContentLoaded", function() {
             calcularTotal();
         });

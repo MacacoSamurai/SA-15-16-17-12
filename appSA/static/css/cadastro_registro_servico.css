@@ -99,10 +99,11 @@ body {
     border: none;
     cursor: pointer;
     transition: transform 0.2s;
+    background-color: #444;
 }
 
-.btn-voltar-mini:hover { transform: scale(1.1); background-color: rgba(255,255,255,0.1); }
-.btn-voltar-mini img { width: 22px; filter: invert(1); }
+.btn-voltar-mini:hover { background-color: #e67e22 }
+.btn-voltar-mini img { width: 18px; filter: invert(1); }
 
 /* Títulos h2 */
 .grupo-dados h2 {
@@ -116,20 +117,16 @@ body {
 }
 
 /* =========================================
-   GRID DO FORMULÁRIO (IMPORTANTE)
+   GRID DO FORMULÁRIO
    ========================================= */
 .container-inputs {
     display: grid;
-    /* Define 2 colunas iguais para Carro e Cliente */
     grid-template-columns: 1fr 1fr; 
     gap: 25px;
     margin-bottom: 10px;
     align-items: start;
 }
 
-/* REGRA DE OURO: Isso faz qualquer div com 'full-width' (como Peças e Valores)
-   ignorar as colunas e ocupar a linha inteira, indo para baixo.
-*/
 .full-width {
     grid-column: 1 / -1; 
     width: 100%;
@@ -145,7 +142,7 @@ label {
     font-size: 0.9rem;
 }
 
-input, select, textarea {
+input, select {
     width: 100%;
     background-color: #404040;
     border: 1px solid #555;
@@ -155,12 +152,17 @@ input, select, textarea {
     font-size: 14px;
     outline: none;
     transition: 0.3s;
-    margin-bottom: 5px; /* Espaço extra embaixo de cada input */
+    margin-bottom: 5px; 
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus, select:focus {
     border-color: #e67e22;
     background-color: #4a4a4a;
+}
+
+.valor-total{
+    border-color: #27ae60;
+
 }
 
 /* =========================================
@@ -204,13 +206,12 @@ input:focus, select:focus, textarea:focus {
 
 .valores-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* 3 Colunas Iguais */
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 15px;
     width: 100%;
     margin-top: 5px;
 }
 
-/* Responsividade: Em telas pequenas, volta a ser um embaixo do outro */
 @media (max-width: 600px) {
     .valores-grid {
         grid-template-columns: 1fr;
@@ -219,9 +220,9 @@ input:focus, select:focus, textarea:focus {
 
 /* Destaque visual para o Total */
 input[name="valor_total"] {
-    background-color: #151515; /* Fundo mais escuro */
-    border: 1px solid #27ae60; /* Borda Verde */
-    color: #2ecc71; /* Texto Verde Neon */
+    background-color: #151515; 
+    border: 1px solid #27ae60; 
+    color: #2ecc71; 
     font-weight: bold;
     font-size: 1.1em;
 }
@@ -249,10 +250,4 @@ input[name="valor_total"] {
     background-color: #d35400;
     box-shadow: 0 2px 0 #ba4a00;
     transform: translateY(2px);
-}
-
-/* =========================================
-   RESPONSIVIDADE
-   ========================================= */
-@media (max-width: 768px) {
 }
