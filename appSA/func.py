@@ -194,16 +194,20 @@ def cadastro_cliente():
             conexao = db_connection()
             cursor = conexao.cursor()
             
-            sql_verify_cliente = "SELECT id_cliente FROM clientes WHERE cpf = %s OR placa_carro = %s"
+            # --- ALTERAÇÃO AQUI ---
+            # Removemos a parte "OR cpf = %s".
+            # Agora ele só verifica se a PLACA já existe no banco.
+            sql_verify_cliente = "SELECT id_cliente FROM clientes WHERE placa_carro = %s"
 
-
-            cursor.execute(sql_verify_cliente, (cpf, placa_carro))
+            # Passamos apenas a placa como tupla (note a vírgula após a variável)
+            cursor.execute(sql_verify_cliente, (placa_carro,)) 
             cliente_existente = cursor.fetchone()
 
             if cliente_existente:
-                 return render_template(f"cadastro_cliente.html", erro="Cliente com este CPF ou Placa já cadastrado!")
+                 # Mensagem de erro atualizada
+                 return render_template("cadastro_cliente.html", erro="Veículo com esta placa já cadastrado!")
 
-            # Ação 3: Uso de INSERT IGNORE para não falhar se a placa já existe
+            # Ação 3: Uso de INSERT IGNORE para não falhar se a placa já existe na tabela carros
             sql_carros = "INSERT IGNORE INTO carros (placa_carro, modelo, fabricante) VALUES (%s, %s, %s)"
             cursor.execute(sql_carros, dados_carros)
 
@@ -212,21 +216,20 @@ def cadastro_cliente():
             
             conexao.commit()
             
-            # Redireciona para a página inicial (ou para uma página de sucesso)
-            return redirect(f"/listar_clientes")
+            return redirect("/listar_clientes")
 
         except mysql.connector.Error as err:
             print(f"Erro ao salvar cliente: {err}")
-            conexao.rollback()
-            return render_template(f"{pi}.html", erro=f"Erro no banco de dados: {err.msg}") 
+            if conexao:
+                conexao.rollback()
+            # Corrigido o nome da variável pi que parecia indefinida no original
+            return render_template("cadastro_cliente.html", erro=f"Erro no banco de dados: {err.msg}") 
     
         finally:
             if conexao and conexao.is_connected():
                 cursor.close()
                 conexao.close()
-    return render_template("cadastro_cliente.html")                
-
-
+    return render_template("cadastro_cliente.html")
 
 #pagina de editar clientes
 @app.route("/editar_cliente/<cpf_original>", methods=['GET', 'POST'])
@@ -417,7 +420,7 @@ def delete_cliente():
     except mysql.connector.Error as err:
         print(f"Erro ao deletar cliente: {err}")
         conexao.rollback()
-        return render_template(f"{pi}.html", erro=f"Erro no banco de dados: Não foi possível deletar o cliente, verifique se há registros de serviço associados.") 
+        return render_template(f"{lg}.html", erro=f"Erro no banco de dados: Não foi possível deletar o cliente, verifique se há registros de serviço associados.") 
     
     finally:
         if conexao and conexao.is_connected():
