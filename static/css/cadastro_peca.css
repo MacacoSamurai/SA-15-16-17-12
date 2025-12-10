@@ -1,0 +1,180 @@
+/* Reseta margens padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Fundo escuro (Asfalto) */
+    background-color: #1c1c1c;
+    color: #ecf0f1; /* Texto claro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+}
+
+/* --- Botão Home Fora (Canto Superior Esquerdo) --- */
+.btn-home-fora {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 50px;
+    height: 50px;
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 50%;
+    
+    /* Alterações para a imagem encher o botão: */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Removemos o espaço interno */
+    overflow: hidden; /* Garante que a imagem não vaze para fora do círculo */
+    
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.btn-home-fora:hover {
+    transform: scale(1.1);
+    border-color: #e67e22;
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
+}
+
+.btn-home-fora img {
+    /* Faz a imagem ocupar todo o espaço disponível */
+    width: 100%;
+    height: 100%;
+    
+    /* Garante que a imagem cubra a área sem distorcer (corta excessos se necessário) */
+    object-fit: cover; 
+    
+    filter: invert(1); /* Mantém a inversão de cor para branco */
+}
+
+/* --- Container Central (O Cartão) --- */
+.base {
+    background-color: #2d2d2d; /* Fundo do cartão cinza escuro */
+    border: 1px solid #3a3a3a;
+    border-radius: 10px; /* Bordas um pouco mais quadradas (industrial) */
+    padding: 35px;
+    width: 90%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6); /* Sombra forte */
+}
+
+/* Área do botão Voltar */
+.area-voltar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.link-voltar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    background-color: #444;
+}
+
+.link-voltar:hover {
+    transform: scale(1.1);
+    background-color: #e67e22
+}
+
+.link-voltar img {
+    width: 22px;
+    height: auto;
+    filter: invert(1); /* Deixa o ícone de voltar branco */
+}
+
+.tudo {
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    color: #e67e22; /* Título em Laranja */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+h2 {
+    color: #bdc3c7; /* Subtítulo cinza claro */
+    font-size: 1rem;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Estilo dos Inputs (Campos) */
+.campo {
+    height: 45px;
+    width: 100%;
+    background-color: #404040; /* Fundo do input escuro */
+    color: #fff;
+    border: 1px solid #555; /* Borda cinza metal */
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding-left: 15px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.campo::placeholder {
+    color: #888; /* Cor do placeholder mais discreta */
+}
+
+.campo:focus {
+    outline: none;
+    border-color: #e67e22; /* Borda laranja ao digitar */
+    background-color: #4a4a4a;
+}
+
+/* Botão Cadastrar */
+.botao {
+    height: 50px;
+    width: 100%;
+    border-radius: 4px;
+    background-color: #e67e22; /* Laranja Mecânico */
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 0 #d35400; /* Efeito 3D sutil na parte de baixo */
+}
+
+.botao:hover {
+    background-color: #d35400; /* Laranja mais escuro */
+    box-shadow: 0 2px 0 #ba4a00; /* Aperta o botão */
+    transform: translateY(2px);
+}

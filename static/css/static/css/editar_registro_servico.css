@@ -1,0 +1,218 @@
+/* --- Reset e Configurações Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1c1c1c; /* Fundo Cinza Escuro */
+    color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+}
+
+/* --- Botão Home (IMAGEM 100%) --- */
+.btn-home-fora {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 50%;
+    padding: 0; 
+    overflow: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.btn-home-fora:hover {
+    transform: scale(1.1);
+    border-color: #e67e22;
+    box-shadow: 0 0 15px rgba(230, 126, 34, 0.4);
+}
+
+.btn-home-fora img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: invert(1);
+}
+
+/* --- Card Principal --- */
+.base {
+    background-color: #2d2d2d;
+    border: 1px solid #3a3a3a;
+    width: 100%;
+    max-width: 900px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- Cabeçalho Interno --- */
+.cabecalho-form {
+    border-bottom: 2px solid #444;
+    padding-bottom: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cabecalho-form h1 {
+    color: #e67e22;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+}
+
+/* Botão Voltar (Seta) */
+.btn-voltar-mini {
+    background-color: #444;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-voltar-mini:hover { background-color: #e67e22; }
+.btn-voltar-mini img { width: 20px; filter: invert(1); }
+
+/* --- Grid de Inputs --- */
+.container-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.grupo-dados h2 {
+    color: #ccc;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    border-left: 4px solid #e67e22;
+    padding-left: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #aaa;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+    font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #e67e22;
+    background-color: #3a3a3a;
+}
+
+/* --- Área de Peças --- */
+.area-pecas {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px dashed #555;
+    margin-top: 10px;
+}
+
+.peca-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+/* Botões da área de peças */
+.btn-remove {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-remove:hover { background-color: #c0392b; }
+
+.btn-add-peca {
+    background-color: transparent;
+    border: 2px solid #2ecc71;
+    color: #2ecc71;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    margin-top: 10px;
+}
+.btn-add-peca:hover {
+    background-color: #2ecc71;
+    color: white;
+}
+
+/* --- Botão Salvar Principal --- */
+.botao-salvar {
+    width: 100%;
+    height: 55px;
+    background-color: #e67e22;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 30px;
+}
+
+.botao-salvar:hover {
+    background-color: #d35400;
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .container-inputs { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
+    .peca-input-group { flex-direction: column; }
+    .btn-remove { width: 100%; }
+}

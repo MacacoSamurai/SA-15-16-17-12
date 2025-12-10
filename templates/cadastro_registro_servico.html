@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/cadastro_registro_servico.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="/static/imagens/icone.png">
+    <title>Novo Serviço</title>
+</head>
+
+<body>
+
+    <a href="pagi" class="btn-home-fora" title="Ir para Início">
+        <img src="/static/imagens/home.png" alt="Home">
+    </a>
+    
+    <div class="base">
+        
+        <div class="cabecalho-form">
+            <a href="listar_registro_servico" class="btn-voltar-mini" title="Voltar">
+                <img src="/static/imagens/voltar.png" alt="Voltar">
+            </a>
+            <h1>Novo Serviço</h1>
+        </div>
+
+        {% if erro %}
+            <div style="background-color: #ffdddd; border-left: 6px solid #f44336; margin-bottom: 15px; padding: 10px;">
+                <p style="color: #a94442; font-weight: bold; margin: 0;">{{ erro }}</p>
+            </div>
+        {% endif %}
+
+        <form action="/cadastro_registro_servico" method="POST">
+            
+            <div class="container-inputs">
+                
+                <div class="grupo-dados">
+                    <h2>Dados Principais</h2>
+                    
+                    <div class="input-box">
+                        <label>CPF do Cliente</label>
+                        <input type="text" name="cpf_cliente" placeholder="Digite o CPF" 
+                               value="{{ dados_form.cpf_cliente if dados_form else '' }}" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label>Diagnóstico / Serviço</label>
+                        <input type="text" name="diagnostico" placeholder="Ex: Troca de Óleo" 
+                               value="{{ dados_form.diagnostico if dados_form else '' }}" required>
+                    </div>
+
+                </div>
+
+                <div class="grupo-dados">
+                    <h2>Prazos e Datas</h2>
+                    
+                    <div class="input-box">
+                        <label>Prazo Estimado</label>
+                        <input type="datetime-local" name="prazo" 
+                               value="{{ dados_form.prazo if dados_form else '' }}" required>
+                    </div>
+                    
+                    <div class="input-box">
+                        <label>Data Realização</label>
+                        <input type="datetime-local" name="realizacao" 
+                               value="{{ dados_form.realizacao if dados_form else '' }}" required>
+                    </div>
+                </div>
+
+                <div class="grupo-dados full-width">
+                    <h2>Peças Utilizadas</h2>
+                    
+                    <div class="area-pecas">
+                        <div id="pecas-container">
+                            <div class="peca-input-group">
+                                <select name="peca_id[]" style="flex: 2;" required>
+                                    <option value="" disabled selected>Selecione a Peça...</option>
+                                    {% for peca in pecas_disponiveis %}
+                                        <option value="{{ peca.id_peca }}">
+                                            {{ peca.nome_peca }} (Lote: {{ peca.lote }} | Disp: {{ peca.quant_peca }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                
+                                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;" required>
+                                
+                                <button type="button" class="btn-remove" onclick="removerPeca(this)" disabled style="opacity: 0.3; cursor: not-allowed;">X</button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-add-peca" onclick="addPeca()" style="margin-top: 10px; cursor: pointer;">+ Adicionar Outra Peça</button>
+                    </div>
+                </div>
+
+                <div class="full-width">
+                    <h2>Valores</h2>
+                    <div class="valores-grid">
+                        
+                        <div class="input-box">
+                            <label>Valor Peças (R$)</label>
+                            <input type="number" step="0.01" id="valor_pecas" name="valor_pecas" placeholder="0.00" 
+                                   value="{{ dados_form.valor_pecas if dados_form else '' }}" oninput="calcularTotal()">
+                        </div>
+
+                        <div class="input-box">
+                            <label>Valor Mão de Obra (R$)</label>
+                            <input type="number" step="0.01" id="valor_servico" name="valor_servico" placeholder="0.00" 
+                                   value="{{ dados_form.valor_servico if dados_form else '' }}" oninput="calcularTotal()">
+                        </div>
+
+                        <div class="input-box">
+                            <label>Valor Total (R$)</label>
+                            <input type="number" step="0.01" id="valor_total" placeholder="0.00" readonly class="valor-total">
+                        </div>
+
+                    </div>
+                </div>
+
+            </div> 
+            
+            <button type="submit" class="botao-salvar" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 16px; cursor: pointer;">SALVAR REGISTRO</button>
+        </form>
+    </div>
+
+    <script>
+        function addPeca() {
+            const container = document.getElementById('pecas-container');
+            const primeiroGrupo = container.querySelector('.peca-input-group');
+            const novoGrupo = document.createElement('div');
+            novoGrupo.className = 'peca-input-group';
+            const selectHTML = primeiroGrupo.querySelector('select').outerHTML;
+            
+            novoGrupo.innerHTML = `
+                ${selectHTML}
+                <input type="number" name="quantidade[]" placeholder="Qtd" min="1" value="1" style="width: 80px;" required>
+                <button type="button" class="btn-remove" onclick="removerPeca(this)" style="cursor: pointer;">X</button>
+            `;
+            container.appendChild(novoGrupo);
+            const novoSelect = novoGrupo.querySelector('select');
+            novoSelect.selectedIndex = 0;
+        }
+
+        function removerPeca(btn) {
+            btn.parentNode.remove();
+        }
+
+        function calcularTotal() {
+            const vPecas = parseFloat(document.getElementById('valor_pecas').value) || 0;
+            const vServico = parseFloat(document.getElementById('valor_servico').value) || 0;
+            const total = vPecas + vServico;
+            document.getElementById('valor_total').value = total.toFixed(2);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            calcularTotal();
+        });
+    </script>
+
+</body>
+</html>

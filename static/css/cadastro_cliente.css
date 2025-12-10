@@ -1,0 +1,186 @@
+/* --- Reset e Configurações Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1c1c1c; /* Fundo Asfalto */
+    color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+}
+
+/* --- Botão Home (Ajustado para Ícone Grande) --- */
+/* --- Botão Home (Ajustado para Imagem Total) --- */
+.btn-home-fora {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    
+    width: 60px;  /* Tamanho total do botão */
+    height: 60px;
+    
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 50%; /* Faz ficar redondo */
+    
+    /* O SEGREDO ESTÁ AQUI: */
+    padding: 0; /* Removemos o espaço interno */
+    overflow: hidden; /* Garante que a imagem não saia da borda redonda */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.btn-home-fora img {
+    /* Força a imagem a ocupar todo o espaço do botão */
+    width: 100%;
+    height: 100%;
+    
+    /* 'cover' faz a imagem preencher tudo sem deformar, cortando excessos se precisar */
+    object-fit: cover; 
+    
+    filter: invert(1); /* Mantém o ícone branco */
+}
+
+.btn-home-fora:hover {
+    transform: scale(1.1);
+    border-color: #e67e22;
+    box-shadow: 0 0 15px rgba(230, 126, 34, 0.4);
+}
+
+/* --- Container Principal (Card) --- */
+.base {
+    background-color: #2d2d2d;
+    border: 1px solid #3a3a3a;
+    width: 100%;
+    max-width: 900px; /* Mais largo para caber duas colunas */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative; /* Para posicionar o botão voltar se quiser dentro */
+}
+
+/* --- Cabeçalho Interno --- */
+.cabecalho-form {
+    border-bottom: 2px solid #444;
+    padding-bottom: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cabecalho-form h1 {
+    color: #e67e22;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+}
+
+/* --- Botão Voltar (Seta) dentro do card --- */
+.btn-voltar-mini {
+    background-color: #444;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-voltar-mini:hover {
+    background-color: #e67e22;
+}
+.btn-voltar-mini img {
+    width: 20px;
+    filter: invert(1);
+}
+
+/* --- Layout do Formulário (Grid) --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.container-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+    gap: 40px; /* Espaço entre as colunas */
+}
+
+@media (max-width: 768px) {
+    .container-inputs {
+        grid-template-columns: 1fr; /* Vira uma coluna no celular */
+    }
+}
+
+.grupo-dados h2 {
+    color: #ccc;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    border-left: 4px solid #e67e22; /* Detalhe laranja ao lado do título */
+    padding-left: 10px;
+}
+
+/* --- Campos de Texto --- */
+.input-box {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #e67e22;
+    background-color: #3a3a3a;
+}
+
+input::placeholder {
+    color: #888;
+}
+
+/* --- Botão Cadastrar --- */
+.botao-cadastrar {
+    width: 100%;
+    height: 55px;
+    background-color: #e67e22;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+}
+
+.botao-cadastrar:hover {
+    background-color: #d35400;
+    transform: scale(1.02);
+}
